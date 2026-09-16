@@ -1,0 +1,35 @@
+import {z} from 'zod';
+import seed from '../../../lib/catalog.json';
+import {readState,saveState} from '../../../lib/storage';
+import {generateMenu,generateDay,menuWarnings,validateDay,monthDates,type Dish} from '../../../lib/menu';
+import {getChatGPTUser} from '../../chatgpt-auth';
+const month=z.string().regex(/^20\d{2}-(0[1-9]|1[0-2])$/);
+const settings=z.object({days:z.array(z.number().int().min(0).max(6)).min(1).max(7),summerMonths:z.array(z.number().int().min(1).max(12)).max(12),maxComplexity:z.number().int().min(1).max(5),repeatDays:z.number().int().min(1).max(90)});
+const dish=z.object({id:z.number().int().positive(),name:z.string().trim().min(1).max(180),category:z.enum(['Carne','Verduras','Pollo','Pescado','Pasta','Legumbres','Arroz','Huevos']),season:z.enum(['Ambos','Verano','Invierno']),complexity:z.number().int().min(1).max(5),person:z.enum(['Ambos','Dani','Marta']),type:z.enum(['Único','Entrante','Principal','Guarnición']),review:z.boolean(),enabled:z.boolean().optional(),family:z.string().max(80).optional()});
+const input=z.discriminatedUnion('action',[
+ z.object({action:z.literal('generate'),month,revision:z.number().int().min(0)}),
+ z.object({action:z.enum(['reroll','lock']),month,date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),revision:z.number().int().min(0)}),
+ z.object({action:z.enum(['confirm','edit']),month,revision:z.number().int().min(0)}),
+ z.object({action:z.literal('settings'),settings,revision:z.number().int().min(0)}),
+ z.object({action:z.literal('dish'),dish,revision:z.number().int().min(0)})]);
+const json=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
+export async function GET(){if(!await getChatGPTUser())return json({error:'Inicia sesión para ver vuestro menú.'},401);try{const data=await readState();return json({...data,catalog:seed.map(d=>data.state.overrides[d.id]??d)})}catch(e){console.error('Menu read',e);return json({error:'No se han podido cargar los menús. Inténtalo de nuevo.'},503)}}
+export async function POST(request:Request){
+ if(!await getChatGPTUser())return json({error:'Inicia sesión para guardar los cambios.'},401);
+ if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Origen no permitido.'},403);
+ let body;try{body=input.parse(await request.json())}catch{return json({error:'Los datos enviados no son válidos.'},400)}
+ try{const {state,revision}=await readState();if(revision!==body.revision)return json({error:'Hay cambios guardados desde otra pestaña. Recarga antes de continuar.'},409);
+ const catalog=seed.map(d=>state.overrides[d.id]??d) as Dish[];
+ if(body.action==='settings'){state.settings={...body.settings,days:[...new Set(body.settings.days)].sort(),summerMonths:[...new Set(body.settings.summerMonths)].sort((a,b)=>a-b)}}
+ else if(body.action==='dish'){if(!seed.some(d=>d.id===body.dish.id))return json({error:'Plato desconocido.'},404);state.overrides[body.dish.id]=body.dish}
+ else {const menu=state.menus[body.month];if(body.action==='generate'){if(menu?.status==='confirmed')return json({error:'Abre el menú para editarlo antes de regenerarlo.'},409);state.menus[body.month]=generateMenu(body.month,catalog,state.settings,state.menus,menu)}
+ else {if(!menu)return json({error:'Este mes todavía no tiene menú.'},404);
+ if(body.action==='edit')menu.status='draft';
+ else {if(menu.status==='confirmed')return json({error:'El menú está confirmado. Ábrelo para editarlo.'},409);
+ if(body.action==='confirm'){if(menu.days.length!==monthDates(menu.month,menu.settings.days).length)throw new Error('El mes está incompleto.');for(const day of menu.days)validateDay({...day,meals:{Dani:day.meals.Dani.map(d=>catalog.find(x=>x.id===d.id)!),Marta:day.meals.Marta.map(d=>catalog.find(x=>x.id===d.id)!)}},menu.settings);menu.status='confirmed'}
+ else if(body.action==='lock'){const day=menu.days.find(d=>d.date===body.date);if(!day)throw new Error('Día no encontrado.');day.locked=!day.locked}
+ else if(body.action==='reroll'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0)throw new Error('Día no encontrado.');if(menu.days[index].locked)throw new Error('Desbloquea el día para cambiarlo.');const history=[...Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days),...menu.days.filter(d=>d.date!==body.date)];menu.days[index]=generateDay(body.date,catalog,menu.settings,history,menu.days[index])}
+ }menu.updatedAt=new Date().toISOString();menu.warnings=menuWarnings(menu,Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days))}}
+ const next=await saveState(state,revision);return json({state,revision:next,catalog:seed.map(d=>state.overrides[d.id]??d)});
+ }catch(e){if(e instanceof Error&&e.message==='CONFLICT')return json({error:'Hay cambios más recientes. Recarga la página.'},409);console.error('Menu save',e);return json({error:e instanceof Error&&!/D1|SQLITE|Database/i.test(e.message)?e.message:'No se han guardado los cambios. Inténtalo de nuevo.'},400)}
+}
