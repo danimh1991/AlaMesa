@@ -1,0 +1,494 @@
+[
+  {
+    "id": "abuela-367",
+    "name": "Merluza al vapor a la gallega",
+    "category": "Pescado",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "700 g Merluza",
+      "3 diente Ajo",
+      "1 manojo Espárragos verdes",
+      "400 g Patata",
+      "200 g Guisantes congelados",
+      "3 ud Pimiento pequeño",
+      "Pimentón dulce",
+      "1 hoja Laurel",
+      "75 ml Aceite de oliva",
+      "Sal",
+      "Pimienta blanca"
+    ],
+    "steps": [
+      "Lava y corta las verduras. Coloca las patatas en una vaporera sobre agua con laurel y cocina unos 10 minutos.",
+      "Añade espárragos, guisantes y pimientos y cocina unos 10 minutos más, comprobando que estén casi tiernos.",
+      "Pon la merluza salpimentada encima y cocina al vapor otros 4–6 minutos, según el grosor.",
+      "Dora suavemente el ajo laminado en el aceite. Retira del fuego, incorpora el pimentón y sirve la salsa sobre el pescado y las verduras."
+    ],
+    "notes": "Los 75 ml de aceite figuran en los pasos de la fuente. Los condimentos sin cantidad quedan pendientes para la compra.",
+    "originalName": "Merluza al vapor a la gallega",
+    "source": "https://www.elmueble.com/cocinas/comidas-saludables_46627",
+    "providerUrl": "https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela",
+    "provider": "Recetas de la Abuela",
+    "details": {
+      "servings": 4,
+      "ingredients": [
+        {
+          "name": "Merluza",
+          "quantity": 700,
+          "unit": "g"
+        },
+        {
+          "name": "Ajo",
+          "quantity": 3,
+          "unit": "diente"
+        },
+        {
+          "name": "Espárragos verdes",
+          "quantity": 1,
+          "unit": "manojo"
+        },
+        {
+          "name": "Patata",
+          "quantity": 400,
+          "unit": "g"
+        },
+        {
+          "name": "Guisantes congelados",
+          "quantity": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Pimiento pequeño",
+          "quantity": 3,
+          "unit": "ud"
+        },
+        {
+          "name": "Pimentón dulce",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Laurel",
+          "quantity": 1,
+          "unit": "hoja"
+        },
+        {
+          "name": "Aceite de oliva",
+          "quantity": 75,
+          "unit": "ml"
+        },
+        {
+          "name": "Sal",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Pimienta blanca",
+          "quantity": null,
+          "unit": ""
+        }
+      ],
+      "steps": [
+        "Lava y corta las verduras. Coloca las patatas en una vaporera sobre agua con laurel y cocina unos 10 minutos.",
+        "Añade espárragos, guisantes y pimientos y cocina unos 10 minutos más, comprobando que estén casi tiernos.",
+        "Pon la merluza salpimentada encima y cocina al vapor otros 4–6 minutos, según el grosor.",
+        "Dora suavemente el ajo laminado en el aceite. Retira del fuego, incorpora el pimentón y sirve la salsa sobre el pescado y las verduras."
+      ],
+      "sourceUrl": "https://www.elmueble.com/cocinas/comidas-saludables_46627",
+      "notes": "Los 75 ml de aceite figuran en los pasos de la fuente. Los condimentos sin cantidad quedan pendientes para la compra.",
+      "reviewed": false,
+      "originalIngredients": "700 g de merluza en rodajas, 3 ajos, 1 manojo de espárragos verdes, 400 g de patatas para vapor, 200 g de guisantes congelados, 3 pimientos pequeños de colores, Pimentón dulce, 1 hoja de laurel, aceite, sal, pimienta blanca"
+    }
+  },
+  {
+    "id": "abuela-401",
+    "name": "Ensalada de garbanzos y tallo de brócoli con cilantro y limón",
+    "category": "Legumbres",
+    "type": "Único",
+    "season": "Verano",
+    "complexity": 1,
+    "ingredients": [
+      "200 g Garbanzos cocidos escurridos",
+      "2 ud Tallo de brócoli",
+      "4 ud Tomate cherry",
+      "3 ud Pepinillo pequeño",
+      "1 manojo Cilantro",
+      "Ajo granulado",
+      "Tomillo",
+      "Limón",
+      "Aceite de oliva",
+      "Pimienta negra",
+      "Sal"
+    ],
+    "steps": [
+      "Escurre y seca los garbanzos; puedes retirar la piel si lo prefieres. Colócalos en una fuente.",
+      "Pica el cilantro. Retira la capa exterior dura de los tallos de brócoli y corta el centro tierno en dados. Incorpora ambos.",
+      "Trocea tomates y pepinillos. Añade ajo, tomillo, sal, pimienta, zumo y ralladura de limón al gusto.",
+      "Aliña con aceite, mezcla y ajusta la sazón. Guarda en frío hasta servir; puedes dejarla reposar un par de horas."
+    ],
+    "notes": "Se elige la alternativa de 4 tomates cherry. El «1 ajo granulado al gusto» del conjunto se deja sin cantidad porque no expresa una medida útil.",
+    "originalName": "Ensalada de garbanzos y tallo de brócoli con cilantro y limón",
+    "source": "https://www.directoalpaladar.com/recetas-de-legumbres-y-verduras/receta-ensalada-garbanzos-tallo-brocoli-cilantro-limon-ideal-para-comer-solos-multiplicar-raciones",
+    "providerUrl": "https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela",
+    "provider": "Recetas de la Abuela",
+    "details": {
+      "servings": 1,
+      "ingredients": [
+        {
+          "name": "Garbanzos cocidos escurridos",
+          "quantity": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Tallo de brócoli",
+          "quantity": 2,
+          "unit": "ud"
+        },
+        {
+          "name": "Tomate cherry",
+          "quantity": 4,
+          "unit": "ud"
+        },
+        {
+          "name": "Pepinillo pequeño",
+          "quantity": 3,
+          "unit": "ud"
+        },
+        {
+          "name": "Cilantro",
+          "quantity": 1,
+          "unit": "manojo"
+        },
+        {
+          "name": "Ajo granulado",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Tomillo",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Limón",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Aceite de oliva",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Pimienta negra",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Sal",
+          "quantity": null,
+          "unit": ""
+        }
+      ],
+      "steps": [
+        "Escurre y seca los garbanzos; puedes retirar la piel si lo prefieres. Colócalos en una fuente.",
+        "Pica el cilantro. Retira la capa exterior dura de los tallos de brócoli y corta el centro tierno en dados. Incorpora ambos.",
+        "Trocea tomates y pepinillos. Añade ajo, tomillo, sal, pimienta, zumo y ralladura de limón al gusto.",
+        "Aliña con aceite, mezcla y ajusta la sazón. Guarda en frío hasta servir; puedes dejarla reposar un par de horas."
+      ],
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-legumbres-y-verduras/receta-ensalada-garbanzos-tallo-brocoli-cilantro-limon-ideal-para-comer-solos-multiplicar-raciones",
+      "notes": "Se elige la alternativa de 4 tomates cherry. El «1 ajo granulado al gusto» del conjunto se deja sin cantidad porque no expresa una medida útil.",
+      "reviewed": false,
+      "originalIngredients": "200 g Garbanzos cocidos en conserva o caseros, escurridos, 2 Brócoli medianos (tallos), 4 Tomate cherry o 1 mediano, 3 Pepinillo pequeño, 1 Cilantro fresco manojo, 1 Ajo granulado al gusto, Tomillo seco o fresco, al gusto, Limón , Aceite de oliva virgen extra , Pimienta negra molida , Sal "
+    }
+  },
+  {
+    "id": "abuela-402",
+    "name": "Ensalada de patata y bonito",
+    "category": "Pescado",
+    "type": "Único",
+    "season": "Verano",
+    "complexity": 2,
+    "ingredients": [
+      "5 ud Patata nueva",
+      "2 ud Huevo",
+      "200 g Bonito en conserva",
+      "1 ud Cebolleta",
+      "100 g Aceitunas manzanilla",
+      "Aceite de oliva",
+      "Vinagre de vino blanco",
+      "Sal",
+      "2 cucharada Mayonesa"
+    ],
+    "steps": [
+      "Cuece las patatas enteras en agua con sal unos 30 minutos desde que hierva, según el tamaño. Escurre y deja enfriar.",
+      "Cuece los huevos 10 minutos desde el hervor. Enfría y pela. Corta patatas, huevos y cebolleta en dados.",
+      "Mezcla con bonito y aceitunas escurridos. Añade sal, vinagre, aceite y dos cucharadas de mayonesa.",
+      "Ajusta el aliño y conserva en la nevera hasta servir fresca."
+    ],
+    "notes": "La mayonesa no tiene cantidad en la lista del conjunto, pero los pasos indican dos cucharadas.",
+    "originalName": "Ensalada de patata y bonito",
+    "source": "https://www.directoalpaladar.com/recetas-de-ensaladas/receta-de-ensalada-de-patata-y-bonito",
+    "providerUrl": "https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela",
+    "provider": "Recetas de la Abuela",
+    "details": {
+      "servings": 2,
+      "ingredients": [
+        {
+          "name": "Patata nueva",
+          "quantity": 5,
+          "unit": "ud"
+        },
+        {
+          "name": "Huevo",
+          "quantity": 2,
+          "unit": "ud"
+        },
+        {
+          "name": "Bonito en conserva",
+          "quantity": 200,
+          "unit": "g"
+        },
+        {
+          "name": "Cebolleta",
+          "quantity": 1,
+          "unit": "ud"
+        },
+        {
+          "name": "Aceitunas manzanilla",
+          "quantity": 100,
+          "unit": "g"
+        },
+        {
+          "name": "Aceite de oliva",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Vinagre de vino blanco",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Sal",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Mayonesa",
+          "quantity": 2,
+          "unit": "cucharada"
+        }
+      ],
+      "steps": [
+        "Cuece las patatas enteras en agua con sal unos 30 minutos desde que hierva, según el tamaño. Escurre y deja enfriar.",
+        "Cuece los huevos 10 minutos desde el hervor. Enfría y pela. Corta patatas, huevos y cebolleta en dados.",
+        "Mezcla con bonito y aceitunas escurridos. Añade sal, vinagre, aceite y dos cucharadas de mayonesa.",
+        "Ajusta el aliño y conserva en la nevera hasta servir fresca."
+      ],
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-ensaladas/receta-de-ensalada-de-patata-y-bonito",
+      "notes": "La mayonesa no tiene cantidad en la lista del conjunto, pero los pasos indican dos cucharadas.",
+      "reviewed": false,
+      "originalIngredients": "5 Patata nueva, 2 Huevos medianos, 200 g Bonito del Norte en conserva en aceite de oliva, 1 Cebolleta mediana, 100 g Aceitunas manzanilla , Aceite de oliva virgen extra , Vinagre de vino blanco , Sal , Mayonesa "
+    }
+  },
+  {
+    "id": "abuela-403",
+    "name": "Ensalada templada de espárragos verdes con huevo poché",
+    "category": "Huevos",
+    "type": "Único",
+    "season": "Verano",
+    "complexity": 2,
+    "ingredients": [
+      "500 g Espárragos verdes",
+      "2 ud Huevo",
+      "4 ud Rabanito",
+      "1 ud Limón",
+      "2 ml Mostaza de Dijon",
+      "5 ml Vinagre de manzana",
+      "45 ml Aceite de oliva",
+      "Semillas de amapola o sésamo",
+      "Pimienta negra",
+      "Sal",
+      "Perejil"
+    ],
+    "steps": [
+      "Retira la base leñosa de los espárragos, lávalos y cuécelos 2–4 minutos. Enfría enseguida en agua helada.",
+      "Separa las puntas y corta los tallos en cintas. Reparte en dos platos con los rabanitos laminados.",
+      "Bate el zumo de medio limón con mostaza, vinagre y aceite para el aliño.",
+      "Escalfa los huevos en agua unos 2–4 minutos, según el punto deseado. Coloca uno por plato, sazona y añade aliño, ralladura de limón, perejil y semillas."
+    ],
+    "notes": "Se conservan las medidas del conjunto. La receta utiliza medio limón en el aliño y su ralladura como acabado; la lista contempla un limón.",
+    "originalName": "Ensalada templada de espárragos verdes con huevo poché",
+    "source": "https://www.directoalpaladar.com/recetas-de-legumbres-y-verduras/ensalada-templada-de-esparragos-verdes-con-huevo-poche-receta-saludable",
+    "providerUrl": "https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela",
+    "provider": "Recetas de la Abuela",
+    "details": {
+      "servings": 2,
+      "ingredients": [
+        {
+          "name": "Espárragos verdes",
+          "quantity": 500,
+          "unit": "g"
+        },
+        {
+          "name": "Huevo",
+          "quantity": 2,
+          "unit": "ud"
+        },
+        {
+          "name": "Rabanito",
+          "quantity": 4,
+          "unit": "ud"
+        },
+        {
+          "name": "Limón",
+          "quantity": 1,
+          "unit": "ud"
+        },
+        {
+          "name": "Mostaza de Dijon",
+          "quantity": 2,
+          "unit": "ml"
+        },
+        {
+          "name": "Vinagre de manzana",
+          "quantity": 5,
+          "unit": "ml"
+        },
+        {
+          "name": "Aceite de oliva",
+          "quantity": 45,
+          "unit": "ml"
+        },
+        {
+          "name": "Semillas de amapola o sésamo",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Pimienta negra",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Sal",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Perejil",
+          "quantity": null,
+          "unit": ""
+        }
+      ],
+      "steps": [
+        "Retira la base leñosa de los espárragos, lávalos y cuécelos 2–4 minutos. Enfría enseguida en agua helada.",
+        "Separa las puntas y corta los tallos en cintas. Reparte en dos platos con los rabanitos laminados.",
+        "Bate el zumo de medio limón con mostaza, vinagre y aceite para el aliño.",
+        "Escalfa los huevos en agua unos 2–4 minutos, según el punto deseado. Coloca uno por plato, sazona y añade aliño, ralladura de limón, perejil y semillas."
+      ],
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-legumbres-y-verduras/ensalada-templada-de-esparragos-verdes-con-huevo-poche-receta-saludable",
+      "notes": "Se conservan las medidas del conjunto. La receta utiliza medio limón en el aliño y su ralladura como acabado; la lista contempla un limón.",
+      "reviewed": false,
+      "originalIngredients": "500 g Espárragos verdes , 2 Huevo , 4 Rabanitos , 1 Limón aromático, 2 ml Mostaza de Dijon , 5 ml Vinagre de manzana , 45 ml Aceite de oliva virgen extra , Semillas de amapola o sésamo, Pimienta negra molida , Sal , Perejil "
+    }
+  },
+  {
+    "id": "abuela-444",
+    "name": "Merluza al horno con ajada al limón",
+    "category": "Pescado",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "1 kg Merluza",
+      "600 g Patata",
+      "1 ud Pimiento rojo",
+      "1 ud Cebolla",
+      "4 diente Ajo",
+      "20 ml Zumo de limón",
+      "80 ml Aceite de oliva",
+      "1 ud Cayena",
+      "Sal",
+      "Perejil"
+    ],
+    "steps": [
+      "Calienta el horno a 180 °C. Corta las patatas en bastones finos, la cebolla en rodajas y el pimiento en trozos.",
+      "Extiende las verduras en una fuente con la mitad del aceite y hornea unos 25 minutos. Añade la merluza salpimentada y hornea 15–20 minutos más, según su grosor.",
+      "Dora el ajo laminado con la cayena en el aceite restante. Retira del fuego y añade con cuidado el zumo de limón.",
+      "Mezcla la salsa, viértela sobre el pescado recién horneado y sirve."
+    ],
+    "notes": "Los pasos del conjunto cortan la cebolla pero no indican cuándo incorporarla: aquí se coloca con las demás verduras.",
+    "originalName": "Merluza al horno con ajada al limón",
+    "source": "https://www.directoalpaladar.com/recetas-de-pescados-y-mariscos/merluza-al-horno-ajada-al-limon-receta-facil-rapida",
+    "providerUrl": "https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela",
+    "provider": "Recetas de la Abuela",
+    "details": {
+      "servings": 4,
+      "ingredients": [
+        {
+          "name": "Merluza",
+          "quantity": 1,
+          "unit": "kg"
+        },
+        {
+          "name": "Patata",
+          "quantity": 600,
+          "unit": "g"
+        },
+        {
+          "name": "Pimiento rojo",
+          "quantity": 1,
+          "unit": "ud"
+        },
+        {
+          "name": "Cebolla",
+          "quantity": 1,
+          "unit": "ud"
+        },
+        {
+          "name": "Ajo",
+          "quantity": 4,
+          "unit": "diente"
+        },
+        {
+          "name": "Zumo de limón",
+          "quantity": 20,
+          "unit": "ml"
+        },
+        {
+          "name": "Aceite de oliva",
+          "quantity": 80,
+          "unit": "ml"
+        },
+        {
+          "name": "Cayena",
+          "quantity": 1,
+          "unit": "ud"
+        },
+        {
+          "name": "Sal",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Perejil",
+          "quantity": null,
+          "unit": ""
+        }
+      ],
+      "steps": [
+        "Calienta el horno a 180 °C. Corta las patatas en bastones finos, la cebolla en rodajas y el pimiento en trozos.",
+        "Extiende las verduras en una fuente con la mitad del aceite y hornea unos 25 minutos. Añade la merluza salpimentada y hornea 15–20 minutos más, según su grosor.",
+        "Dora el ajo laminado con la cayena en el aceite restante. Retira del fuego y añade con cuidado el zumo de limón.",
+        "Mezcla la salsa, viértela sobre el pescado recién horneado y sirve."
+      ],
+      "sourceUrl": "https://www.directoalpaladar.com/recetas-de-pescados-y-mariscos/merluza-al-horno-ajada-al-limon-receta-facil-rapida",
+      "notes": "Los pasos del conjunto cortan la cebolla pero no indican cuándo incorporarla: aquí se coloca con las demás verduras.",
+      "reviewed": false,
+      "originalIngredients": "1 kg Merluza en lomos, 600 g Patata , 1 Pimiento rojo , 1 Cebolla pequeña, 4 Diente de ajo , 20 ml Zumo de limón , 80 ml Aceite de oliva virgen extra , 1 Cayena , Sal al gusto, Perejil fresco al gusto"
+    }
+  }
+]
