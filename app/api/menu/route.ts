@@ -1,17 +1,20 @@
 import {z} from 'zod';
+import {addSuggestions,acceptRecipe} from '../../../lib/recipes';
 import seed from '../../../lib/catalog.json';
 import {readState,saveState} from '../../../lib/storage';
 import {generateMenu,generateDay,menuWarnings,validateDay,monthDates,normalize,type Dish,type State} from '../../../lib/menu';
 import {getChatGPTUser} from '../../chatgpt-auth';
 const month=z.string().regex(/^20\d{2}-(0[1-9]|1[0-2])$/);
 const settings=z.object({days:z.array(z.number().int().min(0).max(6)).min(1).max(7),summerMonths:z.array(z.number().int().min(1).max(12)).max(12),repeatDays:z.number().int().min(1).max(90)});
-const dish=z.object({id:z.number().int().positive(),name:z.string().trim().min(1).max(180),category:z.enum(['Carne','Verduras','Pollo','Pescado','Pasta','Legumbres','Arroz','Huevos']),season:z.enum(['Ambos','Verano','Invierno']),complexity:z.number().int().min(1).max(5),person:z.enum(['Ambos','Dani','Marta']),type:z.enum(['Único','Entrante','Principal','Guarnición']),review:z.boolean(),enabled:z.boolean().optional(),family:z.string().max(80).optional()});
+const dish=z.object({id:z.number().int().positive(),name:z.string().trim().min(1).max(180),category:z.enum(['Carne','Verduras','Pollo','Pescado','Pasta','Legumbres','Arroz','Huevos']),season:z.enum(['Ambos','Verano','Invierno']),complexity:z.number().int().min(1).max(5),person:z.enum(['Ambos','Dani','Marta']),type:z.enum(['Único','Entrante','Principal','Guarnición']),review:z.boolean(),enabled:z.boolean().optional(),family:z.string().max(80).optional(),recipeId:z.string().optional()});
 const manual=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('custom'),Dani:z.string().trim().min(1).max(240),Marta:z.string().trim().min(1).max(240)}),
  z.object({kind:z.literal('out'),note:z.string().trim().max(240).default('')}),
  z.object({kind:z.literal('empty'),note:z.string().trim().max(240).default('')})]);
 const catalogFor=(state:State)=>[...seed,...(state.added??[])].map(d=>state.overrides[d.id]??d) as Dish[];
 const input=z.discriminatedUnion('action',[
+ z.object({action:z.literal('accept-recipe'),recipeId:z.string(),dish:dish.omit({id:true,recipeId:true}),month:month.optional(),date:z.string().optional(),revision:z.number().int().min(0)}),
+ z.object({action:z.literal('reject-recipe'),month,date:z.string(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('generate'),month,revision:z.number().int().min(0)}),
  z.object({action:z.enum(['reroll','lock']),month,date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),revision:z.number().int().min(0)}),
  z.object({action:z.enum(['confirm','edit']),month,revision:z.number().int().min(0)}),
@@ -27,16 +30,18 @@ export async function POST(request:Request){
  let body;try{body=input.parse(await request.json())}catch{return json({error:'Los datos enviados no son válidos.'},400)}
  try{const {state,revision}=await readState();if(revision!==body.revision)return json({error:'Hay cambios guardados desde otra pestaña. Recarga antes de continuar.'},409);
  const catalog=catalogFor(state);
- if(body.action==='settings'){state.settings={...body.settings,days:[...new Set(body.settings.days)].sort(),summerMonths:[...new Set(body.settings.summerMonths)].sort((a,b)=>a-b)}}
- else if(body.action==='dish'){if(!catalog.some(d=>d.id===body.dish.id))return json({error:'Plato desconocido.'},404);state.overrides[body.dish.id]=body.dish}
- else if(body.action==='create-dish'){if(catalog.some(d=>normalize(d.name)===normalize(body.dish.name)))return json({error:'Ya hay un plato con ese nombre. Puedes editarlo en el catálogo.'},409);const id=Math.max(...catalog.map(d=>d.id),0)+1;state.added=[...(state.added??[]),{...body.dish,id}]}
- else {const menu=state.menus[body.month];if(body.action==='generate'){if(menu?.status==='confirmed')return json({error:'Abre el menú para editarlo antes de regenerarlo.'},409);state.menus[body.month]=generateMenu(body.month,catalog,state.settings,state.menus,menu)}
+ if(body.action==='accept-recipe'){acceptRecipe(state,catalog,body);if(body.month){const m=state.menus[body.month];m.warnings=menuWarnings(m,Object.values(state.menus).filter(x=>x.month!==m.month&&x.status==='confirmed').flatMap(x=>x.days));}}
+ else if(body.action==='settings'){state.settings={...body.settings,days:[...new Set(body.settings.days)].sort(),summerMonths:[...new Set(body.settings.summerMonths)].sort((a,b)=>a-b)}}
+ else if(body.action==='dish'){if(!catalog.some(d=>d.id===body.dish.id))return json({error:'Plato desconocido.'},404);state.overrides[body.dish.id]={...body.dish,recipeId:catalog.find(d=>d.id===body.dish.id)?.recipeId}}
+ else if(body.action==='create-dish'){if(catalog.some(d=>normalize(d.name)===normalize(body.dish.name)))return json({error:'Ya hay un plato con ese nombre. Puedes editarlo en el catálogo.'},409);const id=Math.max(...catalog.map(d=>d.id),0)+1;state.added=[...(state.added??[]),{...body.dish,id,recipeId:undefined}]}
+ else {const menu=state.menus[body.month];if(body.action==='generate'){if(menu?.status==='confirmed')return json({error:'Abre el menú para editarlo antes de regenerarlo.'},409);state.menus[body.month]=addSuggestions(generateMenu(body.month,catalog,state.settings,state.menus,menu),catalog,state.menus,menu)}
  else {if(!menu)return json({error:'Este mes todavía no tiene menú.'},404);
  if(body.action==='edit')menu.status='draft';
  else {if(menu.status==='confirmed')return json({error:'El menú está confirmado. Ábrelo para editarlo.'},409);
- if(body.action==='confirm'){if(menu.days.length!==monthDates(menu.month,menu.settings.days).length)throw new Error('El mes está incompleto.');for(const day of menu.days)validateDay({...day,meals:{Dani:day.meals.Dani.map(d=>catalog.find(x=>x.id===d.id)!),Marta:day.meals.Marta.map(d=>catalog.find(x=>x.id===d.id)!)}},menu.settings);menu.status='confirmed'}
+ if(body.action==='confirm'){if(menu.days.some(d=>d.suggestion))throw new Error('Acepta o sustituye las recetas por probar antes de confirmar el mes.');if(menu.days.length!==monthDates(menu.month,menu.settings.days).length)throw new Error('El mes está incompleto.');for(const day of menu.days)validateDay({...day,meals:{Dani:day.meals.Dani.map(d=>catalog.find(x=>x.id===d.id)!),Marta:day.meals.Marta.map(d=>catalog.find(x=>x.id===d.id)!)}},menu.settings);menu.status='confirmed'}
  else if(body.action==='lock'){const day=menu.days.find(d=>d.date===body.date);if(!day)throw new Error('Día no encontrado.');day.locked=!day.locked}
  else if(body.action==='day-manual'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0)throw new Error('Día no encontrado.');menu.days[index]={date:body.date,locked:true,meals:{Dani:[],Marta:[]},manual:body.manual}}
+ else if(body.action==='reject-recipe'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0||!menu.days[index].suggestion)throw new Error('No hay una receta por probar en ese día.');menu.days[index]=generateDay(body.date,catalog,menu.settings,[...Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days),...menu.days.filter(d=>d.date!==body.date)]);}
  else if(body.action==='reroll'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0)throw new Error('Día no encontrado.');if(menu.days[index].locked)throw new Error('Desbloquea el día para cambiarlo.');const history=[...Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days),...menu.days.filter(d=>d.date!==body.date)];menu.days[index]=generateDay(body.date,catalog,menu.settings,history,menu.days[index])}
  }menu.updatedAt=new Date().toISOString();menu.warnings=menuWarnings(menu,Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days))}}
  const next=await saveState(state,revision);return json({state,revision:next,catalog:catalogFor(state)});

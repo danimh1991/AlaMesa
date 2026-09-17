@@ -1,9 +1,9 @@
 export type Person = 'Dani'|'Marta';
-export type Dish = {id:number;name:string;category:string;season:string;complexity:number;person:string;type:string;review:boolean;enabled?:boolean;family?:string};
+export type Dish = {id:number;name:string;category:string;season:string;complexity:number;person:string;type:string;review:boolean;enabled?:boolean;family?:string;recipeId?:string};
 export type Settings = {days:number[];summerMonths:number[];repeatDays:number};
 export type ManualMeal = {kind:'custom';Dani:string;Marta:string}|{kind:'out'|'empty';note:string};
-export type Day = {date:string;meals:Record<Person,Dish[]>;locked:boolean;manual?:ManualMeal};
-export type Menu = {month:string;status:'draft'|'confirmed';days:Day[];settings:Settings;updatedAt:string;warnings:string[]};
+export type Day = {date:string;meals:Record<Person,Dish[]>;locked:boolean;manual?:ManualMeal;suggestion?:string};
+export type Menu = {month:string;status:'draft'|'confirmed';days:Day[];settings:Settings;updatedAt:string;warnings:string[];recipeSlots?:string[]};
 export type State = {settings:Settings;menus:Record<string,Menu>;overrides:Record<string,Dish>;added?:Dish[]};
 export const defaults:Settings={days:[1,2,3,4,5],summerMonths:[6,7,8,9],repeatDays:21};
 export const initialState=():State=>({settings:structuredClone(defaults),menus:{},overrides:{}});

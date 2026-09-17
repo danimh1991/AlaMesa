@@ -1,0 +1,614 @@
+[
+  {
+    "id": "52771",
+    "name": "Macarrones a la arrabbiata",
+    "category": "Pasta",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "454 g de penne",
+      "¼ de taza de aceite de oliva",
+      "3 dientes de ajo",
+      "1 lata de tomate troceado",
+      "½ cucharadita de copos de guindilla",
+      "½ cucharadita de hierbas italianas",
+      "6 hojas de albahaca",
+      "Lascas de parmesano",
+      "Sal y pimienta al gusto"
+    ],
+    "steps": [
+      "Cuece la pasta en agua con sal siguiendo el envase, unos 9 minutos.",
+      "Calienta el aceite en una sartén a fuego medio-alto. Sofríe el ajo 1–2 minutos. Añade tomate, guindilla, hierbas, sal y pimienta; cocina 5 minutos desde que hierva.",
+      "Retira del fuego y añade la albahaca picada. Escurre la pasta, mezcla con la salsa y sirve con parmesano y más albahaca."
+    ],
+    "notes": "1 libra se ha convertido en unos 454 g. La fuente no especifica el tamaño de la lata.",
+    "originalName": "Spicy Arrabiata Penne",
+    "source": "https://www.themealdb.com/meal/52771",
+    "providerUrl": "https://www.themealdb.com/meal/52771"
+  },
+  {
+    "id": "52908",
+    "name": "Ratatouille de verduras",
+    "category": "Verduras",
+    "type": "Entrante",
+    "season": "Verano",
+    "complexity": 3,
+    "ingredients": [
+      "2 berenjenas grandes",
+      "4 calabacines",
+      "2 pimientos amarillos",
+      "4 tomates grandes",
+      "5 cucharadas de aceite de oliva",
+      "1 manojo de albahaca",
+      "1 cebolla mediana",
+      "3 dientes de ajo picados",
+      "1 cucharadita de vinagre de vino tinto",
+      "1 cucharadita de azúcar",
+      "Sal y pimienta"
+    ],
+    "steps": [
+      "Corta berenjenas y calabacines en trozos de unos 1,5 cm. Pela los pimientos, retira semillas y membranas y trocéalos.",
+      "Haz una cruz en los tomates, escáldalos 20 segundos y enfría en agua fría. Pélalos, retira las semillas y trocea.",
+      "Dora las berenjenas con 2 cucharadas de aceite, unos 5 minutos por lado, y reserva. Cocina los calabacines con otra cucharada unos 5 minutos; repite con los pimientos. No los cocines del todo todavía.",
+      "Sofríe la cebolla 5 minutos; añade el ajo 1 minuto. Incorpora vinagre, azúcar, tomates y la mitad de la albahaca. Devuelve las verduras, salpimienta y cocina 5 minutos. Sirve con el resto de albahaca."
+    ],
+    "notes": "",
+    "originalName": "Ratatouille",
+    "source": "https://www.bbcgoodfood.com/recipes/2903/ratatouille",
+    "providerUrl": "https://www.themealdb.com/meal/52908"
+  },
+  {
+    "id": "52963",
+    "name": "Huevos en salsa de tomate (shakshuka)",
+    "category": "Huevos",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "1 cucharada de aceite de oliva",
+      "2 cebollas rojas picadas",
+      "1 guindilla roja picada",
+      "1 diente de ajo",
+      "Cilantro picado",
+      "800 g de tomates cherry",
+      "1 cucharada de azúcar fino",
+      "4 huevos",
+      "Queso feta para espolvorear",
+      "Pan crujiente para acompañar"
+    ],
+    "steps": [
+      "Sofríe cebollas, guindilla, ajo y tallos de cilantro con el aceite en una sartén con tapa durante 5 minutos.",
+      "Añade tomates y azúcar y deja reducir 8–10 minutos.",
+      "Haz cuatro huecos y casca un huevo en cada uno. Tapa y cocina a fuego bajo 6–8 minutos, hasta que cuajen a tu gusto. Termina con hojas de cilantro y sirve con pan."
+    ],
+    "notes": "El feta figura en los ingredientes originales, pero los pasos no indican cuándo añadirlo; se ofrece como acabado opcional.",
+    "originalName": "Shakshuka",
+    "source": "https://www.bbcgoodfood.com/recipes/7573/spicy-tomato-baked-eggs",
+    "providerUrl": "https://www.themealdb.com/meal/52963"
+  },
+  {
+    "id": "52872",
+    "name": "Tortilla de patata con pan con tomate",
+    "category": "Huevos",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 3,
+    "ingredients": [
+      "1 cebolla en rodajas",
+      "4 cucharadas de aceite de oliva",
+      "25 g de mantequilla",
+      "400 g de patatas",
+      "6 dientes de ajo",
+      "8 huevos",
+      "1 puñado de perejil",
+      "1 baguette",
+      "4 tomates de rama",
+      "Un chorrito de aceite de oliva",
+      "Sal"
+    ],
+    "steps": [
+      "Cocina la cebolla a fuego bajo con aceite y mantequilla unos 15 minutos, sin dorarla. Añade las patatas cortadas, tapa y cocina 15–20 minutos, removiendo de vez en cuando.",
+      "Cuando la patata esté tierna, añade 2 dientes de ajo machacados y los huevos batidos. Tapa y cuaja a fuego suave; la fuente orienta unos 20 minutos.",
+      "Da la vuelta con ayuda de platos y termina de cuajar. Sirve con perejil picado.",
+      "Para acompañar, calienta rebanadas de baguette, pincha la miga y frota con los otros 4 dientes de ajo. Cubre con tomate rallado, sal y un hilo de aceite."
+    ],
+    "notes": "Es la versión de TheMealDB: incorpora ajo y mantequilla. Los tiempos de cuajado dependen de la sartén.",
+    "originalName": "Spanish Tortilla",
+    "source": "https://www.bbcgoodfood.com/recipes/spanish-tortilla",
+    "providerUrl": "https://www.themealdb.com/meal/52872"
+  },
+  {
+    "id": "52785",
+    "name": "Dal de legumbres con especias",
+    "category": "Legumbres",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 3,
+    "ingredients": [
+      "1 taza de toor dal (gandules partidos)",
+      "2½ tazas de agua para cocer, más unas 3 para remojo",
+      "1 cucharadita de sal para la cocción",
+      "¼ cucharadita de cúrcuma",
+      "3 cucharadas de ghee",
+      "1 taza de tomate picado",
+      "½ cucharadita de semillas de comino",
+      "½ cucharadita de semillas de mostaza",
+      "2 hojas de laurel",
+      "1 cucharada de guindilla verde picada",
+      "2 cucharaditas de jengibre rallado",
+      "2 cucharadas de cilantro",
+      "½ cucharadita de chile rojo en polvo",
+      "½ cucharadita de sal para el sofrito",
+      "1 cucharadita de azúcar",
+      "¼ cucharadita de garam masala",
+      "Pan naan para servir"
+    ],
+    "steps": [
+      "Lava y remoja el dal al menos 1 hora en unas 3 tazas de agua. Escurre.",
+      "Cuece con 2½ tazas de agua, la primera sal y la cúrcuma a fuego medio-alto, unos 30 minutos hasta que esté blando y espeso.",
+      "Calienta el ghee; añade comino y mostaza. Cuando chisporroteen, añade laurel, guindilla, jengibre y chile en polvo unos segundos.",
+      "Incorpora tomate, la segunda sal y azúcar. Cocina hasta que el tomate se deshaga. Añade cilantro y garam masala y cocina 1 minuto.",
+      "Mezcla el sofrito con el dal, cocina otro minuto y sirve con naan."
+    ],
+    "notes": "Se mantiene el toor dal original; no se ha sustituido por otra legumbre.",
+    "originalName": "Dal fry",
+    "source": "https://www.instagram.com/p/BO21bpYD3Fu",
+    "providerUrl": "https://www.themealdb.com/meal/52785"
+  },
+  {
+    "id": "52870",
+    "name": "Fajitas de garbanzos asados",
+    "category": "Legumbres",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "400 g de garbanzos de conserva",
+      "1 cucharada de aceite de oliva",
+      "1 pizca de pimentón",
+      "2 tomates pequeños troceados",
+      "1 cebolla roja en juliana",
+      "2 cucharaditas de vinagre de vino tinto",
+      "1 aguacate",
+      "Zumo de 1 lima y gajos de lima para servir",
+      "100 g de nata agria",
+      "2 cucharaditas de harissa",
+      "4 tortillas de maíz",
+      "Cilantro para servir"
+    ],
+    "steps": [
+      "Calienta el horno a 200 °C (180 °C con ventilador). Escurre y seca los garbanzos, mezcla con aceite y pimentón sobre una bandeja forrada y asa 20–25 minutos, moviéndolos a mitad.",
+      "Mezcla tomate y cebolla con vinagre. Aparte, machaca el aguacate con el zumo de lima y sazona. Mezcla nata agria y harissa.",
+      "Calienta las tortillas por ambos lados en una plancha. Rellena con crema de harissa, garbanzos, aguacate, tomate y cebolla. Añade cilantro y sirve con lima."
+    ],
+    "notes": "La segunda entrada de lima del original se interpreta como los gajos indicados en sus pasos.",
+    "originalName": "Chickpea Fajitas",
+    "source": "https://www.bbcgoodfood.com/recipes/chickpea-fajitas",
+    "providerUrl": "https://www.themealdb.com/meal/52870"
+  },
+  {
+    "id": "52867",
+    "name": "Chili de alubias con verduras",
+    "category": "Legumbres",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 1,
+    "ingredients": [
+      "400 g de verduras asadas",
+      "1 lata de alubias rojas",
+      "1 lata de tomate troceado",
+      "1 bolsa de mezcla de cereales cocidos",
+      "Sal y pimienta al gusto"
+    ],
+    "steps": [
+      "Calienta el horno a 200 °C (180 °C con ventilador). Pon las verduras en una cazuela apta para horno y cocina 15 minutos.",
+      "Añade alubias y tomate, sazona y hornea otros 10–15 minutos hasta que esté bien caliente.",
+      "Calienta los cereales según el envase; el original indica 1 minuto en microondas a potencia alta. Sirve con el guiso."
+    ],
+    "notes": "La fuente no concreta el tamaño de las latas ni de la bolsa de cereales. No se han inventado pesos.",
+    "originalName": "Vegetarian Chilli",
+    "source": "https://www.bbcgoodfood.com/recipes/veggie-chilli",
+    "providerUrl": "https://www.themealdb.com/meal/52867"
+  },
+  {
+    "id": "52960",
+    "name": "Ensalada templada de salmón y aguacate",
+    "category": "Pescado",
+    "type": "Único",
+    "season": "Verano",
+    "complexity": 2,
+    "ingredients": [
+      "400 g de salmón",
+      "3 aguacates",
+      "1 pepino",
+      "400 g de espinacas",
+      "4 cucharadas de menta",
+      "Ralladura y zumo de 1 lima",
+      "2 cucharaditas de miel",
+      "3 cucharadas de aceite de oliva",
+      "Sal y pimienta"
+    ],
+    "steps": [
+      "Sazona el salmón y úntalo con aceite. Mezcla menta, lima, miel y aceite para el aliño.",
+      "Pela y corta los aguacates. Corta el pepino longitudinalmente en cuartos y después en rodajas. Reparte espinacas, aguacate y pepino en cuatro platos y añade la mitad del aliño.",
+      "Cocina el salmón en sartén antiadherente 3–4 minutos por lado, ajustando a su grosor. Ponlo sobre la ensalada y termina con el resto del aliño."
+    ],
+    "notes": "La fuente no desglosa cuánto aceite reserva para el pescado y cuánto para el aliño.",
+    "originalName": "Salmon Avocado Salad",
+    "source": "https://www.bbcgoodfood.com/recipes/4521/salmon-avocado-and-cucumber-salad",
+    "providerUrl": "https://www.themealdb.com/meal/52960"
+  },
+  {
+    "id": "52869",
+    "name": "Lentejas salteadas con verduras y tahini",
+    "category": "Legumbres",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "50 g de tahini",
+      "Ralladura y zumo de 1 limón",
+      "50 ml de agua fría",
+      "2 cucharadas de aceite de oliva",
+      "1 cebolla roja picada",
+      "1 diente de ajo machacado",
+      "1 pimiento amarillo en tiras",
+      "200 g de judías verdes",
+      "1 calabacín en rodajas",
+      "100 g de kale en tiras",
+      "1 paquete de 250 g de lentejas cocidas",
+      "Sal"
+    ],
+    "steps": [
+      "Mezcla tahini, limón y agua fría para obtener un aliño fluido. Sazona.",
+      "Calienta el aceite a fuego medio-alto y saltea la cebolla con una pizca de sal 2 minutos. Añade ajo, pimiento, judías y calabacín y saltea 5 minutos, removiendo.",
+      "Añade kale, lentejas y aliño. Cocina un par de minutos más hasta que el kale se ablande y todo quede caliente."
+    ],
+    "notes": "El paquete de lentejas se interpreta como cocido, coherente con los breves tiempos de la receta. El agua aparece en los pasos originales.",
+    "originalName": "Tahini Lentils",
+    "source": "https://www.bbcgoodfood.com/recipes/veggie-tahini-lentils",
+    "providerUrl": "https://www.themealdb.com/meal/52869"
+  },
+  {
+    "id": "52959",
+    "name": "Salmón al horno con hinojo y tomates",
+    "category": "Pescado",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "2 bulbos medianos de hinojo",
+      "2 cucharadas de perejil picado",
+      "Zumo y ralladura de 1 limón",
+      "175 g de tomates cherry",
+      "1 cucharada de aceite de oliva",
+      "350 g de salmón",
+      "Aceitunas negras para servir",
+      "Sal"
+    ],
+    "steps": [
+      "Calienta el horno a 180 °C (160 °C con ventilador). Reserva las hojas del hinojo y corta cada bulbo en seis gajos. Hiérvelos 10 minutos en agua con sal y escurre.",
+      "Pica las hojas y mezcla con perejil y ralladura de limón. Coloca hinojo y tomates en una fuente, riega con aceite y hornea 10 minutos.",
+      "Añade el salmón entre las verduras, rocía con zumo de limón y hornea otros 15 minutos, hasta que esté hecho. Termina con la mezcla de perejil."
+    ],
+    "notes": "La ralladura aparece en los pasos originales. Las aceitunas figuran en la lista original como acompañamiento.",
+    "originalName": "Baked salmon with fennel & tomatoes",
+    "source": "https://www.bbcgoodfood.com/recipes/7745/baked-salmon-with-fennel-and-tomatoes",
+    "providerUrl": "https://www.themealdb.com/meal/52959"
+  },
+  {
+    "id": "52850",
+    "name": "Cuscús con pollo, garbanzos y orejones",
+    "category": "Pollo",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "1 cucharada de aceite de oliva",
+      "1 cebolla picada",
+      "200 g de pechuga de pollo",
+      "1 pizca de jengibre",
+      "2 cucharadas de harissa",
+      "10 orejones de albaricoque",
+      "220 g de garbanzos cocidos",
+      "200 g de cuscús",
+      "200 ml de caldo de pollo",
+      "1 puñado de cilantro"
+    ],
+    "steps": [
+      "Sofríe la cebolla con el aceite 1–2 minutos. Añade el pollo en trozos y cocina 7–10 minutos hasta que esté bien hecho y la cebolla dorada.",
+      "Añade jengibre y harissa, mezcla y cocina 1 minuto.",
+      "Incorpora orejones, garbanzos y cuscús; vierte el caldo y remueve una vez. Tapa y deja unos 5 minutos hasta que el cuscús absorba el líquido y esté tierno. Suelta los granos con un tenedor y sirve con cilantro."
+    ],
+    "notes": "Se indican garbanzos cocidos, necesarios para el tiempo de preparación de la fuente.",
+    "originalName": "Chicken Couscous",
+    "source": "https://www.bbcgoodfood.com/recipes/13139/onepan-chicken-couscous",
+    "providerUrl": "https://www.themealdb.com/meal/52850"
+  },
+  {
+    "id": "52934",
+    "name": "Pollo con arroz, pimientos y chorizo",
+    "category": "Pollo",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 4,
+    "ingredients": [
+      "1,5 kg de pollo troceado",
+      "25 g de mantequilla",
+      "6 cucharadas de aceite de oliva",
+      "2 cebollas rojas en rodajas",
+      "3 pimientos rojos grandes",
+      "130 g de chorizo",
+      "8 tomates secos",
+      "6 dientes de ajo en láminas",
+      "300 g de arroz basmati",
+      "Un poco de concentrado de tomate",
+      "½ cucharadita de pimentón",
+      "4 hojas de laurel",
+      "1 puñado de tomillo",
+      "350 ml de caldo de pollo",
+      "180 g de vino blanco seco",
+      "2 limones",
+      "100 g de aceitunas negras",
+      "Sal y pimienta"
+    ],
+    "steps": [
+      "Calienta el horno a 180 °C. Dora el pollo por tandas con mantequilla y 3 cucharadas de aceite, salpimentando. Retira y reserva.",
+      "Añade algo más de aceite y cocina la cebolla 10 minutos sin dorar. Incorpora el resto de aceite y los pimientos; cocina 5 minutos.",
+      "Añade chorizo, tomates secos y ajo durante 2–3 minutos. Incorpora el arroz y mezcla para impregnarlo.",
+      "Añade concentrado de tomate, pimentón, laurel y tomillo. Vierte caldo y vino. Cuando burbujee, baja el fuego y sumerge el arroz en el líquido.",
+      "Coloca el pollo encima y distribuye gajos de limón y aceitunas. Tapa y hornea unos 50 minutos, hasta que el arroz y el pollo estén hechos; prolonga si hace falta."
+    ],
+    "notes": "La fuente da el vino en gramos: se conserva esa medida. El concentrado de tomate no tiene cantidad precisa.",
+    "originalName": "Chicken Basquaise",
+    "source": "https://www.rivercottage.net/recipes/chicken-basquaise",
+    "providerUrl": "https://www.themealdb.com/meal/52934"
+  },
+  {
+    "id": "52841",
+    "name": "Crema de tomate y verduras",
+    "category": "Verduras",
+    "type": "Entrante",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "3 cucharadas de aceite de oliva",
+      "2 cebollas picadas",
+      "2 ramas de apio",
+      "300 g de zanahorias",
+      "500 g de patatas",
+      "4 hojas de laurel",
+      "5 cucharadas de concentrado de tomate",
+      "2 cucharadas de azúcar",
+      "2 cucharadas de vinagre blanco",
+      "1½ kg de tomate troceado",
+      "500 g de tomate triturado fino (passata)",
+      "3 pastillas de caldo vegetal",
+      "1 litro de agua hirviendo",
+      "400 ml de leche entera",
+      "Sal y pimienta"
+    ],
+    "steps": [
+      "Sofríe cebollas, apio, zanahorias, patatas y laurel con el aceite en una cazuela grande durante 10–15 minutos.",
+      "Añade concentrado de tomate, azúcar, vinagre, tomate troceado y passata. Desmenuza el caldo y vierte el agua. Tapa y cuece a fuego suave unos 15 minutos, hasta que la patata esté tierna.",
+      "Retira el laurel, tritura hasta obtener una crema fina y ajusta el punto de sal.",
+      "Para servir, calienta suavemente mientras incorporas la leche, evitando que hierva."
+    ],
+    "notes": "Es una tanda grande. Se conserva la cantidad original; la fuente no indica el número de raciones.",
+    "originalName": "Creamy Tomato Soup",
+    "source": "https://www.bbcgoodfood.com/recipes/2604646/creamy-tomato-soup",
+    "providerUrl": "https://www.themealdb.com/meal/52841"
+  },
+  {
+    "id": "52842",
+    "name": "Crema de brócoli y queso azul",
+    "category": "Verduras",
+    "type": "Entrante",
+    "season": "Invierno",
+    "complexity": 2,
+    "ingredients": [
+      "2 cucharadas de aceite de colza",
+      "1 cebolla picada",
+      "1 rama de apio",
+      "1 puerro en rodajas",
+      "1 patata mediana",
+      "1 nuez de mantequilla",
+      "1 litro de caldo vegetal caliente",
+      "1 cabeza de brócoli troceada",
+      "140 g de queso Stilton",
+      "Pimienta negra"
+    ],
+    "steps": [
+      "Sofríe la cebolla con el aceite a fuego medio hasta ablandarla; añade un poco de agua si se pega.",
+      "Añade apio, puerro, patata y mantequilla. Mezcla, tapa y cocina 5 minutos.",
+      "Vierte el caldo y añade los trozos gruesos del tallo de brócoli. Cuece 10–15 minutos hasta que las verduras estén tiernas.",
+      "Añade el resto del brócoli y cuece 5 minutos más. Tritura con cuidado. Incorpora el queso, dejando algunos trocitos si te gusta, y termina con pimienta."
+    ],
+    "notes": "Se mantiene el queso Stilton de la fuente.",
+    "originalName": "Broccoli & Stilton soup",
+    "source": "https://www.bbcgoodfood.com/recipes/1940679/broccoli-and-stilton-soup",
+    "providerUrl": "https://www.themealdb.com/meal/52842"
+  },
+  {
+    "id": "52868",
+    "name": "Curry de alubias rojas con arroz",
+    "category": "Legumbres",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "1 cucharada de aceite vegetal",
+      "1 cebolla picada",
+      "2 dientes de ajo picados",
+      "1 trozo de jengibre",
+      "1 manojo de cilantro",
+      "1 cucharadita de comino",
+      "1 cucharadita de pimentón",
+      "2 cucharaditas de garam masala",
+      "400 g de tomate troceado",
+      "400 g de alubias rojas en conserva",
+      "Arroz basmati para servir",
+      "Sal"
+    ],
+    "steps": [
+      "Sofríe lentamente la cebolla con aceite y una pizca de sal hasta ablandarla y que empiece a tomar color.",
+      "Añade ajo, jengibre y tallos de cilantro y cocina 2 minutos. Incorpora las especias durante 1 minuto.",
+      "Añade tomate y alubias con su líquido y lleva a ebullición. Baja el fuego y cuece 15 minutos hasta espesar.",
+      "Ajusta la sazón y sirve con arroz basmati cocido y hojas de cilantro."
+    ],
+    "notes": "La fuente no concreta el tamaño del trozo de jengibre ni la cantidad de arroz.",
+    "originalName": "Kidney Bean Curry",
+    "source": "https://www.bbcgoodfood.com/recipes/kidney-bean-curry",
+    "providerUrl": "https://www.themealdb.com/meal/52868"
+  },
+  {
+    "id": "52815",
+    "name": "Lentejas con ajo y tomillo",
+    "category": "Legumbres",
+    "type": "Único",
+    "season": "Invierno",
+    "complexity": 2,
+    "ingredients": [
+      "3 cucharadas de aceite de oliva",
+      "1 cebolla",
+      "2 dientes de ajo",
+      "1 zanahoria",
+      "2¼ tazas de lentejas francesas",
+      "1 cucharadita de tomillo",
+      "3 hojas de laurel",
+      "1 cucharada de sal (cantidad original)",
+      "2 ramas de apio",
+      "6 tazas de agua"
+    ],
+    "steps": [
+      "Pica las verduras y sofríelas en el aceite a fuego medio durante 5–10 minutos, hasta que se ablanden.",
+      "Añade agua, lentejas, tomillo, laurel y sal. Lleva a ebullición y baja a hervor suave.",
+      "Cuece 20–25 minutos o hasta que las lentejas estén tiernas y hayan absorbido la mayor parte del agua. Escurre el exceso si lo hay y sirve."
+    ],
+    "notes": "El agua aparece en los pasos. La fuente permite sustituir parte por caldo de pollo; aquí se mantiene la versión con agua.",
+    "originalName": "French Lentils With Garlic and Thyme",
+    "source": "https://www.themealdb.com/meal/52815",
+    "providerUrl": "https://www.themealdb.com/meal/52815"
+  },
+  {
+    "id": "52777",
+    "name": "Ensalada mediterránea de pasta y atún",
+    "category": "Pasta",
+    "type": "Único",
+    "season": "Verano",
+    "complexity": 1,
+    "ingredients": [
+      "200 g de bolitas de mozzarella",
+      "250 g de tomates pequeños tipo pera",
+      "1 manojo de albahaca fresca",
+      "350 g de farfalle",
+      "3 cucharadas de aceite de oliva virgen extra",
+      "40 g de aceitunas verdes",
+      "200 g de atún",
+      "Sal y pimienta"
+    ],
+    "steps": [
+      "Cuece la pasta en agua con sal unos 10 minutos o según el envase.",
+      "Corta los tomates en cuartos y las aceitunas en rodajas. Mezcla tomates, albahaca troceada y 1 cucharada de aceite en una ensaladera.",
+      "Escurre y enfría la pasta bajo agua fría. Incorpórala junto con aceitunas, mozzarella escurrida y atún en trozos.",
+      "Mezcla y deja reposar al menos media hora para integrar sabores. Termina con pimienta y el resto de aceite."
+    ],
+    "notes": "",
+    "originalName": "Mediterranean Pasta Salad",
+    "source": "https://thelemonsqueezy.com/recipe/mediterranean-pasta-salad/",
+    "providerUrl": "https://www.themealdb.com/meal/52777"
+  },
+  {
+    "id": "52973",
+    "name": "Sopa tunecina de garbanzos",
+    "category": "Legumbres",
+    "type": "Único",
+    "season": "Invierno",
+    "complexity": 3,
+    "ingredients": [
+      "2 cucharadas de aceite de oliva",
+      "1 cebolla mediana picada",
+      "250 g de garbanzos secos, previamente remojados",
+      "1,5 litros de caldo vegetal",
+      "1 cucharadita de comino",
+      "5 dientes de ajo",
+      "½ cucharadita de sal",
+      "1 cucharadita de harissa",
+      "1 pizca de pimienta",
+      "½ lima"
+    ],
+    "steps": [
+      "Sofríe la cebolla con el aceite hasta que esté translúcida. Escurre los garbanzos remojados y añádelos con el caldo.",
+      "Lleva a ebullición, baja el fuego, tapa y cuece 30 minutos.",
+      "Tuesta el comino sin aceite y machácalo con ajo y sal en un mortero. Añade la pasta y la harissa a la sopa.",
+      "Cuece hasta que los garbanzos estén tiernos, unos 30 minutos más según la fuente. Ajusta sal, pimienta y zumo de cítrico y sirve caliente."
+    ],
+    "notes": "La lista indica lima y los pasos dicen limón; se conserva la lima de la lista y se señala la diferencia. La fuente no concreta la duración del remojo.",
+    "originalName": "Leblebi Soup",
+    "source": "http://allrecipes.co.uk/recipe/43419/leblebi--tunisian-chickpea-soup-.aspx",
+    "providerUrl": "https://www.themealdb.com/meal/52973"
+  },
+  {
+    "id": "52955",
+    "name": "Sopa de huevo con verduras",
+    "category": "Huevos",
+    "type": "Entrante",
+    "season": "Ambos",
+    "complexity": 1,
+    "ingredients": [
+      "3 tazas de caldo de pollo",
+      "¼ cucharadita de sal",
+      "¼ cucharadita de azúcar",
+      "1 pizca de pimienta blanca",
+      "1 cucharadita de aceite de sésamo",
+      "⅓ de taza de guisantes",
+      "⅓ de taza de champiñones",
+      "1 cucharada de maicena",
+      "2 cucharadas de agua",
+      "¼ de taza de cebolleta",
+      "1 huevo ligeramente batido"
+    ],
+    "steps": [
+      "Lleva el caldo a ebullición en un wok o cazuela. Añade sal, azúcar, pimienta blanca y aceite de sésamo.",
+      "Incorpora guisantes y champiñones al caldo hirviendo.",
+      "Disuelve la maicena en el agua y añádela poco a poco, removiendo, hasta espesar.",
+      "Vierte el huevo lentamente mientras remueves unos 8 segundos para formar hebras. Sirve con la cebolleta por encima."
+    ],
+    "notes": "El huevo falta en la lista de la API, pero los pasos sí especifican 1 huevo: se ha incorporado a esta lista.",
+    "originalName": "Egg Drop Soup",
+    "source": "https://sueandgambo.com/pages/egg-drop-soup",
+    "providerUrl": "https://www.themealdb.com/meal/52955"
+  },
+  {
+    "id": "53047",
+    "name": "Crema de zanahoria con especias marroquíes",
+    "category": "Verduras",
+    "type": "Entrante",
+    "season": "Invierno",
+    "complexity": 2,
+    "ingredients": [
+      "6 zanahorias troceadas",
+      "1 cebolla en rodajas",
+      "4 dientes de ajo",
+      "1 cucharadita de comino",
+      "½ cucharadita de semillas de cilantro",
+      "1 cucharada de aceite de oliva",
+      "¼ cucharadita de garam masala",
+      "1 cucharadita de zumo de limón",
+      "2 tazas de agua, más un poco para triturar",
+      "Sal"
+    ],
+    "steps": [
+      "Calienta el horno a 180 °C. Mezcla zanahorias, cebolla, ajo, comino, cilantro, sal y aceite y extiende en una bandeja.",
+      "Asa hasta ablandar la zanahoria; la fuente orienta 10–12 minutos. Deja templar.",
+      "Tritura con algo de agua hasta obtener una pasta fina y pásala por un colador.",
+      "Calienta la mezcla en una cazuela, añade 2 tazas de agua y lleva a ebullición. Incorpora garam masala y ajusta la sal.",
+      "Retira del fuego, añade zumo de limón y sirve caliente."
+    ],
+    "notes": "El agua y la sal aparecen en los pasos originales. El tiempo de horno depende del tamaño de los trozos.",
+    "originalName": "Moroccan Carrot Soup",
+    "source": "https://www.sanjeevkapoor.com/Recipe/Moroccan-Carrot-Soup.html",
+    "providerUrl": "https://www.themealdb.com/meal/53047"
+  }
+]
