@@ -1,3 +1,4 @@
+import {basket,addProduct,includeMenu} from '../../../lib/shopping-store';
 import {z} from 'zod';
 import {dishSchema,recipeSchema} from '../../../lib/schemas';
 import {planImport,applyImport} from '../../../lib/catalog-transfer';
@@ -14,7 +15,13 @@ const manual=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('out'),note:z.string().trim().max(240).default('')}),
  z.object({kind:z.literal('empty'),note:z.string().trim().max(240).default('')})]);
 const catalogFor=(state:State)=>[...seed,...(state.added??[])].map(d=>state.overrides[d.id]??d) as Dish[];
+const product=z.object({name:z.string().trim().min(1).max(240),quantity:z.number().positive().max(1000000).nullable(),unit:z.string().trim().max(40)});
 const input=z.discriminatedUnion('action',[
+ z.object({action:z.literal('shopping-add'),product,revision:z.number().int().min(0)}),
+ z.object({action:z.literal('shopping-update'),id:z.string(),product,revision:z.number().int().min(0)}),
+ z.object({action:z.literal('shopping-check'),id:z.string(),checked:z.boolean(),revision:z.number().int().min(0)}),
+ z.object({action:z.literal('shopping-remove'),id:z.string(),revision:z.number().int().min(0)}),
+ z.object({action:z.literal('shopping-include'),month,from:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),to:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),revision:z.number().int().min(0)}),
  z.object({action:z.literal('recipe'),id:z.number().int().positive(),recipe:recipeSchema,revision:z.number().int().min(0)}),
  z.object({action:z.literal('preview-import'),document:z.unknown(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('import-catalog'),document:z.unknown(),revision:z.number().int().min(0)}),
@@ -35,7 +42,10 @@ export async function POST(request:Request){
  let body;try{const raw=await request.text();if(new TextEncoder().encode(raw).length>1500000)return json({error:'El archivo supera el límite de 1,5 MB. Divide la importación en varios archivos.'},413);body=input.parse(JSON.parse(raw))}catch{return json({error:'Los datos enviados no son válidos.'},400)}
  try{const {state,revision}=await readState();if(revision!==body.revision)return json({error:'Hay cambios guardados desde otra pestaña. Recarga antes de continuar.'},409);
  const catalog=catalogFor(state);
- if(body.action==='preview-import'||body.action==='import-catalog'){const plan=planImport(body.document,catalog);if(body.action==='preview-import')return json({preview:plan.summary,revision});applyImport(state,plan)}
+ if(body.action==='shopping-add'){addProduct(state,body.product)}
+ else if(body.action==='shopping-update'||body.action==='shopping-check'||body.action==='shopping-remove'){const store=basket(state),item=store.items.find(i=>i.id===body.id);if(!item)throw new Error('Producto no encontrado.');if(body.action==='shopping-remove')store.items=store.items.filter(i=>i.id!==body.id);else if(body.action==='shopping-check')item.checked=body.checked;else Object.assign(item,body.product)}
+ else if(body.action==='shopping-include'){const menu=state.menus[body.month];if(!menu||body.from>body.to||!body.from.startsWith(body.month)||!body.to.startsWith(body.month))throw new Error('Periodo no válido.');includeMenu(state,menu,catalog,body.from,body.to)}
+ else if(body.action==='preview-import'||body.action==='import-catalog'){const plan=planImport(body.document,catalog);if(body.action==='preview-import')return json({preview:plan.summary,revision});applyImport(state,plan)}
  else if(body.action==='recipe'){const original=catalog.find(d=>d.id===body.id);if(!original)return json({error:'Plato desconocido.'},404);state.overrides[body.id]={...original,recipe:body.recipe}}
  else if(body.action==='accept-recipe'){acceptRecipe(state,catalog,body);if(body.month){const m=state.menus[body.month];m.warnings=menuWarnings(m,Object.values(state.menus).filter(x=>x.month!==m.month&&x.status==='confirmed').flatMap(x=>x.days));}}
  else if(body.action==='settings'){state.settings={...body.settings,days:[...new Set(body.settings.days)].sort(),summerMonths:[...new Set(body.settings.summerMonths)].sort((a,b)=>a-b)}}
@@ -45,7 +55,7 @@ export async function POST(request:Request){
  else {if(!menu)return json({error:'Este mes todavía no tiene menú.'},404);
  if(body.action==='edit')menu.status='draft';
  else {if(menu.status==='confirmed')return json({error:'El menú está confirmado. Ábrelo para editarlo.'},409);
- if(body.action==='confirm'){if(menu.days.some(d=>d.suggestion))throw new Error('Acepta o sustituye las recetas por probar antes de confirmar el mes.');if(menu.days.length!==monthDates(menu.month,menu.settings.days).length)throw new Error('El mes está incompleto.');for(const day of menu.days)validateDay({...day,meals:{Dani:day.meals.Dani.map(d=>catalog.find(x=>x.id===d.id)!),Marta:day.meals.Marta.map(d=>catalog.find(x=>x.id===d.id)!)}},menu.settings);menu.status='confirmed'}
+ if(body.action==='confirm'){if(menu.days.some(d=>d.suggestion))throw new Error('Acepta o sustituye las recetas por probar antes de confirmar el mes.');if(menu.days.length!==monthDates(menu.month,menu.settings.days).length)throw new Error('El mes está incompleto.');for(const day of menu.days)validateDay({...day,meals:{Dani:day.meals.Dani.map(d=>catalog.find(x=>x.id===d.id)!),Marta:day.meals.Marta.map(d=>catalog.find(x=>x.id===d.id)!)}},menu.settings);menu.status='confirmed';includeMenu(state,menu,catalog)}
  else if(body.action==='suggest-recipe'){suggestForDay(menu,catalog,body.date)}
  else if(body.action==='lock'){const day=menu.days.find(d=>d.date===body.date);if(!day)throw new Error('Día no encontrado.');day.locked=!day.locked}
  else if(body.action==='day-manual'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0)throw new Error('Día no encontrado.');menu.days[index]={date:body.date,locked:true,meals:{Dani:[],Marta:[]},manual:body.manual}}
