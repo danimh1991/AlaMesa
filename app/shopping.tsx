@@ -1,6 +1,6 @@
 'use client';
-import {useEffect,useMemo,useState} from 'react';
-import {Download,Plus,Pencil,Trash2} from 'lucide-react';
+import {useEffect,useMemo,useState,useRef} from 'react';
+import {Download,Plus,Pencil,Trash2,Check,X} from 'lucide-react';
 import {shoppingList} from '../lib/shopping';
 import type {Dish,Menu,ShoppingStore,ShoppingItem} from '../lib/menu';
 import {downloadText} from './catalog-transfer';
@@ -14,22 +14,23 @@ export default function Shopping({initialMonth,menus,catalog,store,busy,onAction
  useEffect(()=>{setFrom(menu?menu.month+'-01':'');setTo(end)},[menu?.month,end]);
  const list=useMemo(()=>menu?shoppingList(menu,catalog,from,to):null,[menu,catalog,from,to]);
  const [edit,setEdit]=useState<ShoppingItem|null>(null),[name,setName]=useState(''),[quantity,setQuantity]=useState(''),[unit,setUnit]=useState('');
- const [editing,setEditing]=useState(false);
+ const [editing,setEditing]=useState(false),[formError,setFormError]=useState('');const dialog=useRef<HTMLDialogElement>(null);
+ useEffect(()=>{if(editing)dialog.current?.showModal();else dialog.current?.close()},[editing]);
  const items=store?.items??[];
- function start(item?:ShoppingItem){setEdit(item??null);setName(item?.name??'');setQuantity(item?.quantity?.toString()??'');setUnit(item?.unit??'');setEditing(true)}
+ function start(item?:ShoppingItem){setEdit(item??null);setName(item?.name??'');setQuantity(item?.quantity?.toString()??'');setUnit(item?.unit??'');setFormError('');setEditing(true)}
  async function action(a:Record<string,unknown>){try{await onAction(a)}catch{}}
  function exportList(){downloadText('lista-de-la-compra.txt',['LISTA DE LA COMPRA',...items.map(i=>`${i.checked?'[x]':'[ ]'} ${i.name}: ${i.quantity===null?'Cantidad pendiente':number(i.quantity)} ${i.unit}`),'','DATOS PENDIENTES DEL MENÚ SELECCIONADO',...(list?.pending??[]).map(p=>`${p.name}: ${p.reason} (${p.dates.join(', ')})`)].join('\n'),'text/plain;charset=utf-8')}
  return <>
  <div className="catalog-actions"><button className="primary" disabled={busy} onClick={()=>start()}><Plus size={17}/>Añadir producto</button><button onClick={exportList} disabled={!items.length}><Download size={17}/>Exportar lista</button></div>
  <p className="footnote">La lista y las marcas se guardan. Las nuevas cantidades se suman a los productos pendientes del mismo nombre y unidad; lo comprado queda separado. Puedes editar cualquier producto sin cambiar la receta.</p>
- {editing&&<form className="shopping-editor" onSubmit={async e=>{e.preventDefault();try{await onAction({action:edit?'shopping-update':'shopping-add',...(edit?{id:edit.id}:{}),product:{name,quantity:quantity?Number(quantity):null,unit}});setEditing(false)}catch{}}}>
+ <dialog ref={dialog} aria-labelledby="shopping-dialog-title" onCancel={e=>{if(busy)e.preventDefault();else setEditing(false)}} onClick={e=>{if(e.target===dialog.current&&!busy)setEditing(false)}}>{editing&&<><div className="dialog-header"><h2 id="shopping-dialog-title">{edit?'Editar producto':'Añadir producto'}</h2><button aria-label="Cerrar" disabled={busy} onClick={()=>setEditing(false)}><X size={20}/></button></div><form onSubmit={async e=>{e.preventDefault();try{await onAction({action:edit?'shopping-update':'shopping-add',...(edit?{id:edit.id}:{}),product:{name,quantity:quantity?Number(quantity):null,unit}});setEditing(false)}catch(e){setFormError(e instanceof Error?e.message:'No se ha podido guardar.')}}}>
  <label>Producto<input required maxLength={240} value={name} onChange={e=>setName(e.target.value)}/></label>
  <label>Cantidad<input type="number" min="0.001" max="1000000" step="any" placeholder="Sin especificar" value={quantity} onChange={e=>setQuantity(e.target.value)}/></label>
  <label>Unidad<input maxLength={40} placeholder="ud, g, ml…" value={unit} onChange={e=>setUnit(e.target.value)}/></label>
- <button type="button" disabled={busy} onClick={()=>setEditing(false)}>Cancelar</button><button className="primary" disabled={busy}>{edit?'Guardar cambios':'Añadir'}</button></form>}
- <h2 className="shopping-title">Pendiente de comprar · {items.filter(i=>!i.checked).length}</h2>
+ {formError&&<p className="dialog-error" role="alert">{formError}</p>}<div className="dialog-actions"><button type="button" disabled={busy} onClick={()=>setEditing(false)}>Cancelar</button><button className="primary" disabled={busy}>{edit?'Guardar cambios':'Añadir'}</button></div></form></>}</dialog>
+ <div className="shopping-section-heading"><h2 className="shopping-title">Pendiente de comprar · {items.filter(i=>!i.checked).length}</h2><button disabled={busy||!items.some(i=>!i.checked)} onClick={()=>void action({action:'shopping-check-all'})}><Check size={17}/>Marcar todo como comprado</button></div>
  {!items.length&&<div className="empty compact"><h3>Tu lista está vacía</h3><p>Añade cualquier producto o incorpora las cantidades de un menú confirmado.</p></div>}
- {[false,true].map(checked=><section key={String(checked)}>{checked&&items.some(i=>i.checked)&&<h2 className="shopping-title">Comprado</h2>}<div className="shopping-list">{items.filter(i=>i.checked===checked).map(i=><div className="shopping-item" key={i.id}>
+ {[false,true].map(checked=><section key={String(checked)}>{checked&&items.some(i=>i.checked)&&<div className="shopping-section-heading"><h2 className="shopping-title">Comprado</h2><button disabled={busy} onClick={()=>void action({action:'shopping-clear-checked'})}><Trash2 size={17}/>Limpiar comprados</button></div>}<div className="shopping-list">{items.filter(i=>i.checked===checked).map(i=><div className="shopping-item" key={i.id}>
  <label><input type="checkbox" disabled={busy} checked={i.checked} onChange={e=>void action({action:'shopping-check',id:i.id,checked:e.target.checked})}/><span className={i.checked?'bought':''}>{i.name}</span><strong>{i.quantity===null?'Sin cantidad':number(i.quantity)} {i.unit}</strong></label>
  <div className="shopping-row-actions"><button aria-label={'Editar '+i.name} disabled={busy} onClick={()=>start(i)}><Pencil size={15}/>Editar</button><button aria-label={'Eliminar '+i.name} disabled={busy} onClick={()=>void action({action:'shopping-remove',id:i.id})}><Trash2 size={15}/>Eliminar</button></div>
  {i.uses.length>0&&<details><summary>Ver platos y días</summary>{i.uses.map(u=><p key={u}>{u}</p>)}</details>}</div>)}</div></section>)}

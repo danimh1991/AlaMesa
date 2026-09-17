@@ -17,6 +17,8 @@ const manual=z.discriminatedUnion('kind',[
 const catalogFor=(state:State)=>[...seed,...(state.added??[])].map(d=>state.overrides[d.id]??d) as Dish[];
 const product=z.object({name:z.string().trim().min(1).max(240),quantity:z.number().positive().max(1000000).nullable(),unit:z.string().trim().max(40)});
 const input=z.discriminatedUnion('action',[
+ z.object({action:z.literal('shopping-check-all'),revision:z.number().int().min(0)}),
+ z.object({action:z.literal('shopping-clear-checked'),revision:z.number().int().min(0)}),
  z.object({action:z.literal('shopping-add'),product,revision:z.number().int().min(0)}),
  z.object({action:z.literal('shopping-update'),id:z.string(),product,revision:z.number().int().min(0)}),
  z.object({action:z.literal('shopping-check'),id:z.string(),checked:z.boolean(),revision:z.number().int().min(0)}),
@@ -42,7 +44,9 @@ export async function POST(request:Request){
  let body;try{const raw=await request.text();if(new TextEncoder().encode(raw).length>1500000)return json({error:'El archivo supera el límite de 1,5 MB. Divide la importación en varios archivos.'},413);body=input.parse(JSON.parse(raw))}catch{return json({error:'Los datos enviados no son válidos.'},400)}
  try{const {state,revision}=await readState();if(revision!==body.revision)return json({error:'Hay cambios guardados desde otra pestaña. Recarga antes de continuar.'},409);
  const catalog=catalogFor(state);
- if(body.action==='shopping-add'){addProduct(state,body.product)}
+ if(body.action==='shopping-check-all'){for(const item of basket(state).items)item.checked=true}
+ else if(body.action==='shopping-clear-checked'){const store=basket(state);store.items=store.items.filter(i=>!i.checked)}
+ else if(body.action==='shopping-add'){addProduct(state,body.product)}
  else if(body.action==='shopping-update'||body.action==='shopping-check'||body.action==='shopping-remove'){const store=basket(state),item=store.items.find(i=>i.id===body.id);if(!item)throw new Error('Producto no encontrado.');if(body.action==='shopping-remove')store.items=store.items.filter(i=>i.id!==body.id);else if(body.action==='shopping-check')item.checked=body.checked;else Object.assign(item,body.product)}
  else if(body.action==='shopping-include'){const menu=state.menus[body.month];if(!menu||body.from>body.to||!body.from.startsWith(body.month)||!body.to.startsWith(body.month))throw new Error('Periodo no válido.');includeMenu(state,menu,catalog,body.from,body.to)}
  else if(body.action==='preview-import'||body.action==='import-catalog'){const plan=planImport(body.document,catalog);if(body.action==='preview-import')return json({preview:plan.summary,revision});applyImport(state,plan)}
