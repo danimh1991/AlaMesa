@@ -1,4 +1,6 @@
 import {z} from 'zod';
+import {dishSchema,recipeSchema} from '../../../lib/schemas';
+import {planImport,applyImport} from '../../../lib/catalog-transfer';
 import {addSuggestions,acceptRecipe} from '../../../lib/recipes';
 import seed from '../../../lib/catalog.json';
 import {readState,saveState} from '../../../lib/storage';
@@ -6,13 +8,16 @@ import {generateMenu,generateDay,menuWarnings,validateDay,monthDates,normalize,t
 import {getChatGPTUser} from '../../chatgpt-auth';
 const month=z.string().regex(/^20\d{2}-(0[1-9]|1[0-2])$/);
 const settings=z.object({days:z.array(z.number().int().min(0).max(6)).min(1).max(7),summerMonths:z.array(z.number().int().min(1).max(12)).max(12),repeatDays:z.number().int().min(1).max(90)});
-const dish=z.object({id:z.number().int().positive(),name:z.string().trim().min(1).max(180),category:z.enum(['Carne','Verduras','Pollo','Pescado','Pasta','Legumbres','Arroz','Huevos']),season:z.enum(['Ambos','Verano','Invierno']),complexity:z.number().int().min(1).max(5),person:z.enum(['Ambos','Dani','Marta']),type:z.enum(['Único','Entrante','Principal','Guarnición']),review:z.boolean(),enabled:z.boolean().optional(),family:z.string().max(80).optional(),recipeId:z.string().optional()});
+const dish=dishSchema;
 const manual=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('custom'),Dani:z.string().trim().min(1).max(240),Marta:z.string().trim().min(1).max(240)}),
  z.object({kind:z.literal('out'),note:z.string().trim().max(240).default('')}),
  z.object({kind:z.literal('empty'),note:z.string().trim().max(240).default('')})]);
 const catalogFor=(state:State)=>[...seed,...(state.added??[])].map(d=>state.overrides[d.id]??d) as Dish[];
 const input=z.discriminatedUnion('action',[
+ z.object({action:z.literal('recipe'),id:z.number().int().positive(),recipe:recipeSchema,revision:z.number().int().min(0)}),
+ z.object({action:z.literal('preview-import'),document:z.unknown(),revision:z.number().int().min(0)}),
+ z.object({action:z.literal('import-catalog'),document:z.unknown(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('accept-recipe'),recipeId:z.string(),dish:dish.omit({id:true,recipeId:true}),month:month.optional(),date:z.string().optional(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('reject-recipe'),month,date:z.string(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('generate'),month,revision:z.number().int().min(0)}),
@@ -27,10 +32,12 @@ export async function GET(){if(!await getChatGPTUser())return json({error:'Inici
 export async function POST(request:Request){
  if(!await getChatGPTUser())return json({error:'Inicia sesión para guardar los cambios.'},401);
  if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Origen no permitido.'},403);
- let body;try{body=input.parse(await request.json())}catch{return json({error:'Los datos enviados no son válidos.'},400)}
+ let body;try{const raw=await request.text();if(new TextEncoder().encode(raw).length>1500000)return json({error:'El archivo supera el límite de 1,5 MB. Divide la importación en varios archivos.'},413);body=input.parse(JSON.parse(raw))}catch{return json({error:'Los datos enviados no son válidos.'},400)}
  try{const {state,revision}=await readState();if(revision!==body.revision)return json({error:'Hay cambios guardados desde otra pestaña. Recarga antes de continuar.'},409);
  const catalog=catalogFor(state);
- if(body.action==='accept-recipe'){acceptRecipe(state,catalog,body);if(body.month){const m=state.menus[body.month];m.warnings=menuWarnings(m,Object.values(state.menus).filter(x=>x.month!==m.month&&x.status==='confirmed').flatMap(x=>x.days));}}
+ if(body.action==='preview-import'||body.action==='import-catalog'){const plan=planImport(body.document,catalog);if(body.action==='preview-import')return json({preview:plan.summary,revision});applyImport(state,plan)}
+ else if(body.action==='recipe'){const original=catalog.find(d=>d.id===body.id);if(!original)return json({error:'Plato desconocido.'},404);state.overrides[body.id]={...original,recipe:body.recipe}}
+ else if(body.action==='accept-recipe'){acceptRecipe(state,catalog,body);if(body.month){const m=state.menus[body.month];m.warnings=menuWarnings(m,Object.values(state.menus).filter(x=>x.month!==m.month&&x.status==='confirmed').flatMap(x=>x.days));}}
  else if(body.action==='settings'){state.settings={...body.settings,days:[...new Set(body.settings.days)].sort(),summerMonths:[...new Set(body.settings.summerMonths)].sort((a,b)=>a-b)}}
  else if(body.action==='dish'){if(!catalog.some(d=>d.id===body.dish.id))return json({error:'Plato desconocido.'},404);state.overrides[body.dish.id]={...body.dish,recipeId:catalog.find(d=>d.id===body.dish.id)?.recipeId}}
  else if(body.action==='create-dish'){if(catalog.some(d=>normalize(d.name)===normalize(body.dish.name)))return json({error:'Ya hay un plato con ese nombre. Puedes editarlo en el catálogo.'},409);const id=Math.max(...catalog.map(d=>d.id),0)+1;state.added=[...(state.added??[]),{...body.dish,id,recipeId:undefined}]}

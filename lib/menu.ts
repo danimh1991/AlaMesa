@@ -1,5 +1,7 @@
 export type Person = 'Dani'|'Marta';
-export type Dish = {id:number;name:string;category:string;season:string;complexity:number;person:string;type:string;review:boolean;enabled?:boolean;family?:string;recipeId?:string};
+export type Ingredient={name:string;quantity:number|null;unit:string;notes?:string};
+export type RecipeDetails={servings:number|null;ingredients:Ingredient[];steps:string[];sourceUrl:string;notes:string;reviewed:boolean;originalIngredients?:string};
+export type Dish = {id:number;name:string;category:string;season:string;complexity:number;person:string;type:string;review:boolean;enabled?:boolean;family?:string;recipeId?:string;recipe?:RecipeDetails};
 export type Settings = {days:number[];summerMonths:number[];repeatDays:number};
 export type ManualMeal = {kind:'custom';Dani:string;Marta:string}|{kind:'out'|'empty';note:string};
 export type Day = {date:string;meals:Record<Person,Dish[]>;locked:boolean;manual?:ManualMeal;suggestion?:string};

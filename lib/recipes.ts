@@ -1,6 +1,6 @@
 import recipes from './recipes.json';
 import {generateDay,allowed,normalize,people,type Menu,type Dish,type State,type Day} from './menu';
-export type Recipe={id:string;name:string;category:string;type:string;season:string;complexity:number;ingredients:string[];steps:string[];notes:string;originalName:string;source:string;providerUrl:string};
+export type Recipe={id:string;name:string;category:string;type:string;season:string;complexity:number;ingredients:string[];steps:string[];notes:string;originalName:string;source:string;providerUrl:string;provider?:string;details?:import('./menu').RecipeDetails};
 export const pilot=recipes as Recipe[];
 export function addSuggestions(menu:Menu,catalog:Dish[],menus:Record<string,Menu>,previous?:Menu){
  // Keep slot decisions across regeneration, including rejections and manual edits.
@@ -19,7 +19,7 @@ export function acceptRecipe(state:State,catalog:Dish[],body:{recipeId:string;di
  const existing=catalog.find(d=>d.recipeId===recipe.id);
  if((existing&&!body.month)||(!existing&&catalog.some(d=>normalize(d.name)===normalize(body.dish.name))))throw new Error('Esta receta ya está en vuestros platos.');
  if(Boolean(body.month)!==Boolean(body.date))throw new Error('Indica el mes y el día juntos.');
- const dish: Dish=existing??{...body.dish,id:Math.max(0,...catalog.map(d=>d.id))+1,recipeId:recipe.id};
+ const dish: Dish=existing??{...body.dish,id:Math.max(0,...catalog.map(d=>d.id))+1,recipeId:recipe.id,recipe:recipe.details};
  let replacement:Day|undefined;const menu=body.month?state.menus[body.month]:undefined;
  if(body.month){if(!menu||menu.status!=='draft')throw new Error('Abre el mes como borrador antes de aceptar la receta.');const day=menu.days.find(d=>d.date===body.date);if(!day||day.suggestion!==recipe.id)throw new Error('La propuesta de ese día ha cambiado.');if(dish.enabled===false||dish.type==='Guarnición')throw new Error('Para ese día elige un plato disponible de tipo único, entrante o principal.');
  const history=Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days).concat(menu.days.filter(d=>d.date!==day.date));
