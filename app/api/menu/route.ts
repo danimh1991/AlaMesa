@@ -5,13 +5,14 @@ import {planImport,applyImport} from '../../../lib/catalog-transfer';
 import {addSuggestions,acceptRecipe,suggestForDay} from '../../../lib/recipes';
 import seed from '../../../lib/catalog.json';
 import {readState,saveState} from '../../../lib/storage';
-import {generateMenu,generateDay,menuWarnings,validateDay,monthDates,normalize,type Dish,type State} from '../../../lib/menu';
+import {generateMenu,generateDay,menuWarnings,validateDay,monthDates,normalize,peopleFor,emptyMeals,validateDay as validateManual,type Dish,type State} from '../../../lib/menu';
 import {getChatGPTUser} from '../../chatgpt-auth';
 const month=z.string().regex(/^20\d{2}-(0[1-9]|1[0-2])$/);
-const settings=z.object({days:z.array(z.number().int().min(0).max(6)).min(1).max(7),summerMonths:z.array(z.number().int().min(1).max(12)).max(12),repeatDays:z.number().int().min(1).max(90)});
+const diners=z.array(z.object({id:z.string().regex(/^[a-zA-Z0-9_-]{1,80}$/).refine(v=>!['Ambos','__proto__','constructor','prototype'].includes(v)),name:z.string().trim().min(1).max(40)})).min(1).max(12).refine(ds=>new Set(ds.map(d=>d.id)).size===ds.length&&new Set(ds.map(d=>normalize(d.name))).size===ds.length,'Los nombres no pueden repetirse.');
+const settings=z.object({diners:diners.optional(),days:z.array(z.number().int().min(0).max(6)).min(1).max(7),summerMonths:z.array(z.number().int().min(1).max(12)).max(12),repeatDays:z.number().int().min(1).max(90)});
 const dish=dishSchema;
 const manual=z.discriminatedUnion('kind',[
- z.object({kind:z.literal('custom'),Dani:z.string().trim().min(1).max(240),Marta:z.string().trim().min(1).max(240)}),
+ z.object({kind:z.literal('custom'),entries:z.record(z.string().trim().min(1).max(240)).optional(),Dani:z.string().trim().min(1).max(240).optional(),Marta:z.string().trim().min(1).max(240).optional()}),
  z.object({kind:z.literal('out'),note:z.string().trim().max(240).default('')}),
  z.object({kind:z.literal('empty'),note:z.string().trim().max(240).default('')})]);
 const catalogFor=(state:State)=>[...seed,...(state.added??[])].map(d=>state.overrides[d.id]??d) as Dish[];
@@ -44,6 +45,7 @@ export async function POST(request:Request){
  let body;try{const raw=await request.text();if(new TextEncoder().encode(raw).length>1500000)return json({error:'El archivo supera el límite de 1,5 MB. Divide la importación en varios archivos.'},413);body=input.parse(JSON.parse(raw))}catch{return json({error:'Los datos enviados no son válidos.'},400)}
  try{const {state,revision}=await readState();if(revision!==body.revision)return json({error:'Hay cambios guardados desde otra pestaña. Recarga antes de continuar.'},409);
  const catalog=catalogFor(state);
+ if(['dish','create-dish','accept-recipe'].includes(body.action)&&'dish' in body&&body.dish.person!=='Ambos'&&!peopleFor(body.action==='accept-recipe'&&body.month?state.menus[body.month]?.settings??state.settings:state.settings).includes(body.dish.person)){const existing='id' in body.dish?catalog.find(d=>d.id===(body.dish as Partial<Dish>).id):undefined;if(!existing||existing.person!==body.dish.person)throw new Error('Selecciona un comensal de Preferencias.');}
  if(body.action==='shopping-check-all'){for(const item of basket(state).items)item.checked=true}
  else if(body.action==='shopping-clear-checked'){const store=basket(state);store.items=store.items.filter(i=>!i.checked)}
  else if(body.action==='shopping-add'){addProduct(state,body.product)}
@@ -52,17 +54,17 @@ export async function POST(request:Request){
  else if(body.action==='preview-import'||body.action==='import-catalog'){const plan=planImport(body.document,catalog);if(body.action==='preview-import')return json({preview:plan.summary,revision});applyImport(state,plan)}
  else if(body.action==='recipe'){const original=catalog.find(d=>d.id===body.id);if(!original)return json({error:'Plato desconocido.'},404);state.overrides[body.id]={...original,recipe:body.recipe}}
  else if(body.action==='accept-recipe'){acceptRecipe(state,catalog,body);if(body.month){const m=state.menus[body.month];m.warnings=menuWarnings(m,Object.values(state.menus).filter(x=>x.month!==m.month&&x.status==='confirmed').flatMap(x=>x.days));}}
- else if(body.action==='settings'){state.settings={...body.settings,days:[...new Set(body.settings.days)].sort(),summerMonths:[...new Set(body.settings.summerMonths)].sort((a,b)=>a-b)}}
+ else if(body.action==='settings'){state.settings={...body.settings,diners:body.settings.diners??state.settings.diners,days:[...new Set(body.settings.days)].sort(),summerMonths:[...new Set(body.settings.summerMonths)].sort((a,b)=>a-b)}}
  else if(body.action==='dish'){if(!catalog.some(d=>d.id===body.dish.id))return json({error:'Plato desconocido.'},404);state.overrides[body.dish.id]={...body.dish,recipeId:catalog.find(d=>d.id===body.dish.id)?.recipeId}}
  else if(body.action==='create-dish'){if(catalog.some(d=>normalize(d.name)===normalize(body.dish.name)))return json({error:'Ya hay un plato con ese nombre. Puedes editarlo en el catálogo.'},409);const id=Math.max(...catalog.map(d=>d.id),0)+1;state.added=[...(state.added??[]),{...body.dish,id,recipeId:undefined}]}
  else {const menu=state.menus[body.month];if(body.action==='generate'){if(menu?.status==='confirmed')return json({error:'Abre el menú para editarlo antes de regenerarlo.'},409);state.menus[body.month]=addSuggestions(generateMenu(body.month,catalog,state.settings,state.menus,menu),catalog,state.menus,menu)}
  else {if(!menu)return json({error:'Este mes todavía no tiene menú.'},404);
  if(body.action==='edit')menu.status='draft';
  else {if(menu.status==='confirmed')return json({error:'El menú está confirmado. Ábrelo para editarlo.'},409);
- if(body.action==='confirm'){if(menu.days.some(d=>d.suggestion))throw new Error('Acepta o sustituye las recetas por probar antes de confirmar el mes.');if(menu.days.length!==monthDates(menu.month,menu.settings.days).length)throw new Error('El mes está incompleto.');for(const day of menu.days)validateDay({...day,meals:{Dani:day.meals.Dani.map(d=>catalog.find(x=>x.id===d.id)!),Marta:day.meals.Marta.map(d=>catalog.find(x=>x.id===d.id)!)}},menu.settings);menu.status='confirmed';includeMenu(state,menu,catalog)}
+ if(body.action==='confirm'){if(menu.days.some(d=>d.suggestion))throw new Error('Acepta o sustituye las recetas por probar antes de confirmar el mes.');if(menu.days.length!==monthDates(menu.month,menu.settings.days).length)throw new Error('El mes está incompleto.');for(const day of menu.days)validateDay({...day,meals:Object.fromEntries(peopleFor(menu.settings).map(p=>[p,(day.meals[p]??[]).map(d=>catalog.find(x=>x.id===d.id)!)]))},menu.settings);menu.status='confirmed';includeMenu(state,menu,catalog)}
  else if(body.action==='suggest-recipe'){suggestForDay(menu,catalog,body.date)}
  else if(body.action==='lock'){const day=menu.days.find(d=>d.date===body.date);if(!day)throw new Error('Día no encontrado.');day.locked=!day.locked}
- else if(body.action==='day-manual'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0)throw new Error('Día no encontrado.');menu.days[index]={date:body.date,locked:true,meals:{Dani:[],Marta:[]},manual:body.manual}}
+ else if(body.action==='day-manual'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0)throw new Error('Día no encontrado.');menu.days[index]={date:body.date,locked:true,meals:emptyMeals(menu.settings),manual:body.manual};validateManual(menu.days[index],menu.settings)}
  else if(body.action==='reject-recipe'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0||!menu.days[index].suggestion)throw new Error('No hay una receta por probar en ese día.');menu.days[index]=generateDay(body.date,catalog,menu.settings,[...Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days),...menu.days.filter(d=>d.date!==body.date)]);}
  else if(body.action==='reroll'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0)throw new Error('Día no encontrado.');if(menu.days[index].locked)throw new Error('Desbloquea el día para cambiarlo.');const history=[...Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days),...menu.days.filter(d=>d.date!==body.date)];menu.days[index]=generateDay(body.date,catalog,menu.settings,history,menu.days[index])}
  }menu.updatedAt=new Date().toISOString();menu.warnings=menuWarnings(menu,Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days))}}
