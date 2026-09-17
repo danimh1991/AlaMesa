@@ -1,8 +1,5 @@
 Fuentes de las recetas de referencia de A la mesa
 
-TheMealDB: https://www.themealdb.com/terms_of_use.php
-20 adaptaciones en español, con enlace a la ficha y fuente original.
-
 RecetasDeLaAbuel@ (SomosNLP, marzo 2024):
 https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela
 La ficha declara licencia OpenRAIL. Se han seleccionado 5 registros de main.csv (Id 367, 401, 402, 403 y 444), conservando sus enlaces originales. Ingredientes estructurados y preparación resumida para este piloto. No se incluye el conjunto completo.
