@@ -2,6 +2,8 @@ Fuentes de las recetas de referencia de A la mesa
 
 RecetasDeLaAbuel@ (SomosNLP, marzo 2024):
 https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela
-La ficha declara licencia OpenRAIL. Se han seleccionado 5 registros de main.csv (Id 367, 401, 402, 403 y 444), conservando sus enlaces originales. Ingredientes estructurados y preparación resumida para este piloto. No se incluye el conjunto completo.
+La ficha declara licencia OpenRAIL. Se han seleccionado 45 registros de main.csv, conservando sus enlaces originales. Ingredientes estructurados y preparación del conjunto, con ajustes puntuales indicados en las notas. No se incluye el conjunto completo.
 Autores según la ficha: Morales-Garzón, Andrea; Rocha, Oscar A.; Benel Ramirez, Sara; Tuco Casquino, Gabriel; Medina, Alberto.
 Las fuentes originales incluyen El Mueble y Directo al Paladar; están enlazadas en cada receta.
+
+Registros incluidos (Id): 367, 401, 402, 403, 444, 363, 364, 365, 368, 369, 370, 371, 374, 376, 377, 378, 380, 381, 383, 385, 386, 387, 400, 404, 405, 406, 408, 409, 410, 414, 415, 416, 417, 418, 421, 422, 425, 426, 428, 430, 432, 434, 445, 446, 450.
