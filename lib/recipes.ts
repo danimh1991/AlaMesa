@@ -31,3 +31,17 @@ export function acceptRecipe(state:State,catalog:Dish[],body:{recipeId:string;di
  }
  if(!existing)state.added=[...(state.added??[]),dish];if(menu&&replacement){menu.days[menu.days.findIndex(d=>d.date===replacement!.date)]=replacement;menu.updatedAt=new Date().toISOString();}
 }
+
+export function suggestForDay(menu:Menu,catalog:Dish[],date:string){
+ if(menu.status!=='draft')throw new Error('Abre el menú para editarlo.');
+ const index=menu.days.findIndex(d=>d.date===date);
+ if(index<0)throw new Error('Día no encontrado.');
+ const day=menu.days[index];
+ if(day.locked&&!day.suggestion)throw new Error('Desbloquea el día para proponer una receta nueva.');
+ const used=new Set(menu.days.flatMap(d=>d.suggestion?[d.suggestion]:[]));
+ const eligible=pilot.filter(r=>!used.has(r.id)&&!catalog.some(d=>d.recipeId===r.id||normalize(d.name)===normalize(r.name))&&allowed({...r,id:0,person:'Ambos',review:false},'Dani',date,menu.settings));
+ if(!eligible.length)throw new Error('No quedan recetas nuevas para esta temporada que no estén ya en vuestro catálogo o propuestas en este mes.');
+ const recipe=eligible[Math.floor(Math.random()*eligible.length)];
+ menu.days[index]={date,locked:true,suggestion:recipe.id,meals:{Dani:[],Marta:[]},manual:{kind:'custom',Dani:recipe.name,Marta:recipe.name}};
+ menu.recipeSlots=[...new Set([...(menu.recipeSlots??[]),date])];
+}

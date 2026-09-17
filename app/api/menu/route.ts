@@ -1,7 +1,7 @@
 import {z} from 'zod';
 import {dishSchema,recipeSchema} from '../../../lib/schemas';
 import {planImport,applyImport} from '../../../lib/catalog-transfer';
-import {addSuggestions,acceptRecipe} from '../../../lib/recipes';
+import {addSuggestions,acceptRecipe,suggestForDay} from '../../../lib/recipes';
 import seed from '../../../lib/catalog.json';
 import {readState,saveState} from '../../../lib/storage';
 import {generateMenu,generateDay,menuWarnings,validateDay,monthDates,normalize,type Dish,type State} from '../../../lib/menu';
@@ -21,7 +21,7 @@ const input=z.discriminatedUnion('action',[
  z.object({action:z.literal('accept-recipe'),recipeId:z.string(),dish:dish.omit({id:true,recipeId:true}),month:month.optional(),date:z.string().optional(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('reject-recipe'),month,date:z.string(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('generate'),month,revision:z.number().int().min(0)}),
- z.object({action:z.enum(['reroll','lock']),month,date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),revision:z.number().int().min(0)}),
+ z.object({action:z.enum(['reroll','lock','suggest-recipe']),month,date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),revision:z.number().int().min(0)}),
  z.object({action:z.enum(['confirm','edit']),month,revision:z.number().int().min(0)}),
  z.object({action:z.literal('settings'),settings,revision:z.number().int().min(0)}),
  z.object({action:z.literal('dish'),dish,revision:z.number().int().min(0)}),
@@ -46,6 +46,7 @@ export async function POST(request:Request){
  if(body.action==='edit')menu.status='draft';
  else {if(menu.status==='confirmed')return json({error:'El menú está confirmado. Ábrelo para editarlo.'},409);
  if(body.action==='confirm'){if(menu.days.some(d=>d.suggestion))throw new Error('Acepta o sustituye las recetas por probar antes de confirmar el mes.');if(menu.days.length!==monthDates(menu.month,menu.settings.days).length)throw new Error('El mes está incompleto.');for(const day of menu.days)validateDay({...day,meals:{Dani:day.meals.Dani.map(d=>catalog.find(x=>x.id===d.id)!),Marta:day.meals.Marta.map(d=>catalog.find(x=>x.id===d.id)!)}},menu.settings);menu.status='confirmed'}
+ else if(body.action==='suggest-recipe'){suggestForDay(menu,catalog,body.date)}
  else if(body.action==='lock'){const day=menu.days.find(d=>d.date===body.date);if(!day)throw new Error('Día no encontrado.');day.locked=!day.locked}
  else if(body.action==='day-manual'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0)throw new Error('Día no encontrado.');menu.days[index]={date:body.date,locked:true,meals:{Dani:[],Marta:[]},manual:body.manual}}
  else if(body.action==='reject-recipe'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0||!menu.days[index].suggestion)throw new Error('No hay una receta por probar en ese día.');menu.days[index]=generateDay(body.date,catalog,menu.settings,[...Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days),...menu.days.filter(d=>d.date!==body.date)]);}
