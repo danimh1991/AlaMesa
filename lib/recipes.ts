@@ -12,7 +12,7 @@ export function individualDay(day:Day,menu:Menu):Day{
  if(copy.suggestion){const recipe=pendingRecipe(copy);if(!recipe)throw new Error('Sustituye la propuesta antigua antes de editarla.');for(const p of peopleFor(menu.settings)){copy.personal[p]={kind:'suggestion',recipe};copy.meals[p]=[];}delete copy.suggestion;delete copy.suggestedRecipe;}
  return copy;
 }
-function eligible(pool:Recipe[],catalog:Dish[],date:string,menu:Menu,person=peopleFor(menu.settings)[0]){return pool.filter(r=>!catalog.some(d=>d.recipeId===r.id||normalize(d.name)===normalize(r.name))&&allowed({...r,id:0,person:'Ambos',review:false},person,date,menu.settings));}
+function eligible(pool:Recipe[],catalog:Dish[],date:string,menu:Menu,person=peopleFor(menu.settings)[0]){return pool.filter(r=>!catalog.some(d=>d.recipeId===r.id||normalize(d.name)===normalize(r.name))&&allowed({...r,id:0,diners:peopleFor(menu.settings),mealType:menu.settings.mealType,review:false},person,date,menu.settings));}
 export function addSuggestions(menu:Menu,catalog:Dish[],menus:Record<string,Menu>,previous?:Menu,pool:Recipe[]=pilot){
  if(previous?.recipeSlots){menu.recipeSlots=previous.recipeSlots;return menu;}
  const tried=new Set(Object.values(menus).flatMap(m=>m.days.flatMap(d=>[...(d.suggestion?[d.suggestion]:[]),...Object.values(d.personal??{}).flatMap(p=>p.kind==='suggestion'?[p.recipe.id]:[])])));
@@ -36,10 +36,10 @@ export function acceptRecipe(state:State,catalog:Dish[],body:{recipeId:string;di
   if(!body.schedule){const proposed=target?day.personal?.[target]:undefined;if(target?((proposed?.kind!=='suggestion'||proposed.recipe.id!==recipe.id)&&day.suggestion!==recipe.id):day.suggestion!==recipe.id)throw new Error('La propuesta de ese día ha cambiado.');}
   else if(day.locked&&!body.replaceLocked)throw new Error('Confirma que quieres sustituir la comida de ese día bloqueado.');
   if(dish.enabled===false||dish.type==='Guarnición')throw new Error('Elige un plato disponible de tipo único, entrante o principal.');
-  const recipients=target?[target]:body.schedule&&dish.person!=='Ambos'?[dish.person]:people;
+  const recipients=target?[target]:people;
   const replacement=target||body.schedule?individualDay(day,menu):{date:day.date,locked:true,meals:emptyMeals(menu.settings)} as Day;
   for(const p of recipients){
-   if(dish.person!=='Ambos'&&dish.person!==p){if(target)throw new Error('Este plato no está asignado a ese comensal.');replacement.meals[p]=generateDay(day.date,catalog,menu.settings,menu.days).meals[p];continue;}
+   if(!dish.diners.includes(p)){if(target)throw new Error('Este plato no está asignado a ese comensal.');replacement.meals[p]=generateDay(day.date,catalog,menu.settings,menu.days).meals[p];if(replacement.personal)delete replacement.personal[p];continue;}
    if(!allowed(dish,p,day.date,menu.settings))throw new Error('La temporada o el comensal no encajan con este plato.');
    const history=Object.values(state.menus).filter(m=>m.month!==menu!.month&&m.status==='confirmed').flatMap(m=>m.days).concat(menu.days.filter(d=>d.date!==day.date));
    if(dish.type==='Único')replacement.meals[p]=[dish];

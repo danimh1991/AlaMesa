@@ -1,9 +1,10 @@
 export type Person = string;
 export type Diner={id:string;name:string};
+export type MealType='Desayuno'|'Comida'|'Merienda'|'Cena';
 export type Ingredient={name:string;quantity:number|null;unit:string;notes?:string};
 export type RecipeDetails={servings:number|null;ingredients:Ingredient[];steps:string[];sourceUrl:string;notes:string;reviewed:boolean;originalIngredients?:string};
-export type Dish = {id:number;name:string;category:string;season:string;complexity:number;person:string;type:string;review:boolean;enabled?:boolean;family?:string;recipeId?:string;recipe?:RecipeDetails};
-export type Settings = {diners?:Diner[];days:number[];summerMonths:number[];repeatDays:number};
+export type Dish = {id:number;name:string;category:string;season:string;complexity:number;diners:string[];mealType:MealType;type:string;review:boolean;enabled?:boolean;family?:string;recipeId?:string;recipe?:RecipeDetails};
+export type Settings = {diners?:Diner[];days:number[];summerMonths:number[];repeatDays:number;mealType:MealType};
 export type ManualMeal = {kind:'custom';entries?:Record<string,string>;Dani?:string;Marta?:string}|{kind:'out'|'empty';note:string};
 export type PersonalMeal={kind:'out'|'tupper'|'custom'|'empty';note:string}|{kind:'suggestion';recipe:import('./recipes').Recipe};
 export type Day = {date:string;meals:Record<Person,Dish[]>;locked:boolean;manual?:ManualMeal;suggestion?:string;suggestedRecipe?:import('./recipes').Recipe;personal?:Record<string,PersonalMeal>};
@@ -11,7 +12,8 @@ export type Menu = {month:string;status:'draft'|'confirmed';days:Day[];settings:
 export type ShoppingItem={id:string;name:string;quantity:number|null;unit:string;checked:boolean;uses:string[]};
 export type ShoppingStore={items:ShoppingItem[];included:Record<string,number>};
 export type State = {settings:Settings;menus:Record<string,Menu>;overrides:Record<string,Dish>;added?:Dish[];shopping?:ShoppingStore;discovery?:{recipes:import('./recipes').Recipe[];updatedAt:string}};
-export const defaults:Settings={diners:[{id:'Dani',name:'Dani'},{id:'Marta',name:'Marta'}],days:[1,2,3,4,5],summerMonths:[6,7,8,9],repeatDays:21};
+export const mealTypes:MealType[]=['Desayuno','Comida','Merienda','Cena'];
+export const defaults:Settings={diners:[{id:'Dani',name:'Dani'},{id:'Marta',name:'Marta'}],days:[1,2,3,4,5],summerMonths:[6,7,8,9],repeatDays:21,mealType:'Comida'};
 export const initialState=():State=>({settings:structuredClone(defaults),menus:{},overrides:{}});
 export const people:Person[]=['Dani','Marta'];
 export const dinersFor=(s:Settings)=>s.diners??defaults.diners!;
@@ -28,10 +30,16 @@ export function family(d:Dish){
  return n.split(' ').slice(0,2).join(' ');
 }
 export function monthDates(month:string,days:number[]){const [y,m]=month.split('-').map(Number);const out:string[]=[];for(let d=1;d<=new Date(Date.UTC(y,m,0)).getUTCDate();d++){const dt=new Date(Date.UTC(y,m-1,d));if(days.includes(dt.getUTCDay()))out.push(`${month}-${String(d).padStart(2,'0')}`)}return out}
-export function allowed(d:Dish,p:Person,date:string,s:Settings){const summer=s.summerMonths.includes(Number(date.slice(5,7)));return d.enabled!==false&&(d.person==='Ambos'||d.person===p)&&(d.season==='Ambos'||d.season===(summer?'Verano':'Invierno'))}
+export function allowed(d:Dish,p:Person,date:string,s:Settings){const summer=s.summerMonths.includes(Number(date.slice(5,7)));return d.enabled!==false&&d.diners.includes(p)&&d.mealType===s.mealType&&(d.season==='Ambos'||d.season===(summer?'Verano':'Invierno'))}
 // Base spacing applies to level 3; simple meals can return sooner.
 export function repeatInterval(d:Dish,s:Settings){return s.repeatDays*[0.4,0.7,1,1.6,2.3][Math.max(0,Math.min(4,d.complexity-1))]}
-export function normalizeSettings(s:Settings):Settings{return {diners:structuredClone(dinersFor(s)),days:s.days??defaults.days,summerMonths:s.summerMonths??defaults.summerMonths,repeatDays:s.repeatDays??defaults.repeatDays}}
+export function normalizeSettings(s:Settings):Settings{return {diners:structuredClone(dinersFor(s)),days:s.days??defaults.days,summerMonths:s.summerMonths??defaults.summerMonths,repeatDays:s.repeatDays??defaults.repeatDays,mealType:mealTypes.includes(s.mealType)?s.mealType:'Comida'}}
+export function normalizeDish(d:Dish|Record<string,unknown>):Dish{
+ const legacy=typeof (d as {person?:unknown}).person==='string'?(d as {person:string}).person:'';
+ const selected=Array.isArray((d as {diners?:unknown}).diners)?(d as {diners:string[]}).diners.filter(x=>typeof x==='string'&&x):legacy==='Ambos'?['Dani','Marta']:legacy?[legacy]:[];
+ const mealType=mealTypes.includes((d as {mealType?:MealType}).mealType as MealType)?(d as {mealType:MealType}).mealType:'Comida';
+ const result={...d,diners:[...new Set(selected)],mealType} as Dish&{person?:string};delete result.person;return result;
+}
 function distance(a:string,b:string){return Math.abs(Date.parse(a)-Date.parse(b))/86400000}
 function week(date:string){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);return d.toISOString().slice(0,10)}
 export function generateDay(date:string,catalog:Dish[],s:Settings,history:Day[],old?:Day,random= Math.random):Day {

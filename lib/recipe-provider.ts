@@ -1,11 +1,12 @@
 import {normalize,type Dish} from './menu';
 import type {Recipe} from './recipes';
+import recipeSearchIndex from './recipe-search-index';
 
 export const PROVIDER_URL='https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela';
 type Row={row_idx:number;row:Record<string,unknown>;truncated_cells?:unknown[]};
 type Page={rows:Row[];num_rows_total:number};
 const API='https://datasets-server.huggingface.co/';
-export async function providerPage(route:'rows'|'search',params:Record<string,string>):Promise<Page>{
+export async function providerPage(route:'rows',params:Record<string,string>):Promise<Page>{
  const url=new URL(route,API);url.search=new URLSearchParams({dataset:'somosnlp/RecetasDeLaAbuela',config:'version_1',split:'train',...params}).toString();
  try{
   const response=await fetch(url,{signal:AbortSignal.timeout(20000),headers:{Accept:'application/json'}});
@@ -67,10 +68,14 @@ const searchCache=new Map<string,{until:number;result:{recipes:Recipe[];total:nu
 export async function searchRecipes(query:string,offset:number){
  query=normalize(query).replace(/\s+/g,' ');
  const key=`${query}:${offset}`,cached=searchCache.get(key);if(cached&&cached.until>Date.now())return cached.result;
- const page=await providerPage('search',{query,offset:String(offset),length:'30'});
- const recipes=page.rows.map(fromProvider).filter((r):r is Recipe=>r!==null);
+ const terms=query.match(/[a-z]{2,}/g)??[];if(!terms.length)return {recipes:[],total:0,nextOffset:null};
+ const matches=recipeSearchIndex.filter(([,searchable])=>terms.every(term=>searchable.includes(term)));
+ const selected=matches.slice(offset,offset+30),rows:Row[]=[];
+ for(let start=0;start<selected.length;start+=10){const pages=await Promise.all(selected.slice(start,start+10).map(([rowIndex])=>providerPage('rows',{offset:String(rowIndex),length:'1'})));rows.push(...pages.flatMap(page=>page.rows));}
+ const recipes=rows.map(fromProvider).filter((r):r is Recipe=>r!==null);
  const unique=[...new Map(recipes.map(r=>[normalize(r.name),r])).values()];
- const result={recipes:unique,total:page.num_rows_total,nextOffset:page.rows.length&&offset+page.rows.length<page.num_rows_total?offset+page.rows.length:null};
+ const next=offset+selected.length;
+ const result={recipes:unique,total:matches.length,nextOffset:selected.length&&next<matches.length?next:null};
  if(searchCache.size>=12)searchCache.delete(searchCache.keys().next().value!);
  searchCache.set(key,{until:Date.now()+300000,result});return result;
 }
