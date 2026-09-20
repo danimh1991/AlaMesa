@@ -5,11 +5,12 @@ export type RecipeDetails={servings:number|null;ingredients:Ingredient[];steps:s
 export type Dish = {id:number;name:string;category:string;season:string;complexity:number;person:string;type:string;review:boolean;enabled?:boolean;family?:string;recipeId?:string;recipe?:RecipeDetails};
 export type Settings = {diners?:Diner[];days:number[];summerMonths:number[];repeatDays:number};
 export type ManualMeal = {kind:'custom';entries?:Record<string,string>;Dani?:string;Marta?:string}|{kind:'out'|'empty';note:string};
-export type Day = {date:string;meals:Record<Person,Dish[]>;locked:boolean;manual?:ManualMeal;suggestion?:string};
+export type PersonalMeal={kind:'out'|'tupper'|'custom'|'empty';note:string}|{kind:'suggestion';recipe:import('./recipes').Recipe};
+export type Day = {date:string;meals:Record<Person,Dish[]>;locked:boolean;manual?:ManualMeal;suggestion?:string;suggestedRecipe?:import('./recipes').Recipe;personal?:Record<string,PersonalMeal>};
 export type Menu = {month:string;status:'draft'|'confirmed';days:Day[];settings:Settings;updatedAt:string;warnings:string[];recipeSlots?:string[]};
 export type ShoppingItem={id:string;name:string;quantity:number|null;unit:string;checked:boolean;uses:string[]};
 export type ShoppingStore={items:ShoppingItem[];included:Record<string,number>};
-export type State = {settings:Settings;menus:Record<string,Menu>;overrides:Record<string,Dish>;added?:Dish[];shopping?:ShoppingStore};
+export type State = {settings:Settings;menus:Record<string,Menu>;overrides:Record<string,Dish>;added?:Dish[];shopping?:ShoppingStore;discovery?:{recipes:import('./recipes').Recipe[];updatedAt:string}};
 export const defaults:Settings={diners:[{id:'Dani',name:'Dani'},{id:'Marta',name:'Marta'}],days:[1,2,3,4,5],summerMonths:[6,7,8,9],repeatDays:21};
 export const initialState=():State=>({settings:structuredClone(defaults),menus:{},overrides:{}});
 export const people:Person[]=['Dani','Marta'];
@@ -87,4 +88,4 @@ export function generateMenu(month:string,catalog:Dish[],settings:Settings,menus
  for(const date of monthDates(month,settings.days)){const keep=locked.find(d=>d.date===date);if(keep){if(peopleFor(previous!.settings).join()!==peopleFor(settings).join())throw new Error('Han cambiado los comensales. Desbloquea los días antes de regenerar este mes.');validateDay(keep,settings);days.push(keep)}else days.push(generateDay(date,catalog,settings,[...history,...locked,...days.filter(d=>!d.locked)],previous?.days.find(d=>d.date===date)))}
  const menu:Menu={month,status:'draft',days,settings:structuredClone(settings),updatedAt:new Date().toISOString(),warnings:[]};menu.warnings=menuWarnings(menu,history);return menu;
 }
-export function validateDay(day:Day,s:Settings){if(day.manual){if(day.manual.kind==='custom'&&peopleFor(s).some(p=>!manualEntries(day.manual as Extract<ManualMeal,{kind:'custom'}>)[p]?.trim()))throw new Error('Completa la comida puntual de todos los comensales.');return;}for(const p of peopleFor(s)){const ds=day.meals[p]??[];if(!ds.length||ds.some(d=>!d||!allowed(d,p,day.date,s)))throw new Error(`La comida de ${p} del ${day.date} no cumple las preferencias.`);if(!(ds.length===1&&ds[0].type==='Único')&&!(ds.length===2&&ds[0].type==='Entrante'&&ds[1].type==='Principal'))throw new Error(`Falta completar la comida de ${p}.`)} }
+export function validateDay(day:Day,s:Settings){if(day.manual){if(day.manual.kind==='custom'&&peopleFor(s).some(p=>!manualEntries(day.manual as Extract<ManualMeal,{kind:'custom'}>)[p]?.trim()))throw new Error('Completa la comida puntual de todos los comensales.');return;}for(const p of peopleFor(s)){const personal=day.personal?.[p];if(personal){if(personal.kind==='suggestion')continue;if(personal.kind==='custom'&&!personal.note.trim())throw new Error('Completa la comida puntual.');continue;}const ds=day.meals[p]??[];if(!ds.length||ds.some(d=>!d||!allowed(d,p,day.date,s)))throw new Error(`La comida de ${p} del ${day.date} no cumple las preferencias.`);if(!(ds.length===1&&ds[0].type==='Único')&&!(ds.length===2&&ds[0].type==='Entrante'&&ds[1].type==='Principal'))throw new Error(`Falta completar la comida de ${p}.`)} }
