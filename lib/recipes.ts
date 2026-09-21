@@ -22,7 +22,9 @@ export function addSuggestions(menu:Menu,catalog:Dish[],menus:Record<string,Menu
  if(previous?.recipeSlots){menu.recipeSlots=previous.recipeSlots;return menu;}
  const tried=new Set(Object.values(menus).flatMap(m=>m.days.flatMap(d=>[...(d.suggestion?[d.suggestion]:[]),...personalSuggestions(d).map(recipe=>recipe.id)])));
  const choices=eligible(pool,catalog,menu.month+'-01',menu).filter(r=>!tried.has(r.id));menu.recipeSlots=[];
- for(const target of [Math.floor(menu.days.length*.25),Math.floor(menu.days.length*.75)]){const day=menu.days.filter(d=>!d.locked&&!menu.recipeSlots!.includes(d.date)).sort((a,b)=>Math.abs(menu.days.indexOf(a)-target)-Math.abs(menu.days.indexOf(b)-target))[0];if(!day||!choices.length)continue;const recipe=choices.splice(Math.floor(Math.random()*choices.length),1)[0];Object.assign(day,{suggestion:recipe.id,suggestedRecipe:recipe,locked:true});setMealsFor(day,'Comida',emptyMeals(menu.settings));menu.recipeSlots.push(day.date);}
+ const count=Math.min(menu.settings.newRecipeSuggestions,menu.days.length,choices.length);
+ const targets=Array.from({length:count},(_,index)=>Math.floor(menu.days.length*(index+.5)/count));
+ for(const target of targets){const day=menu.days.filter(d=>!d.locked&&!menu.recipeSlots!.includes(d.date)).sort((a,b)=>Math.abs(menu.days.indexOf(a)-target)-Math.abs(menu.days.indexOf(b)-target))[0];if(!day||!choices.length)continue;const recipe=choices.splice(Math.floor(Math.random()*choices.length),1)[0];Object.assign(day,{suggestion:recipe.id,suggestedRecipe:recipe,locked:true});setMealsFor(day,'Comida',emptyMeals(menu.settings));menu.recipeSlots.push(day.date);}
  return menu;
 }
 export function acceptRecipe(state:State,catalog:Dish[],body:{recipeId:string;dish:Omit<Dish,'id'|'recipeId'>;month?:string;date?:string;schedule?:boolean;replaceLocked?:boolean;targetPerson?:string},recipe:Recipe){

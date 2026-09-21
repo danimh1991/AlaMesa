@@ -5,6 +5,8 @@ import {fromProvider,refreshRecipes,sourceList} from '../lib/recipe-provider';
 import {shoppingList} from '../lib/shopping';
 const catalog:Dish[]=Array.from({length:5},(_,i)=>({id:i+1,name:`Plato ${i+1}`,category:'Verduras',season:'Ambos',complexity:2,diners:i===4?['Marta']:['Dani','Marta'],mealType:'Comida',type:'Único',review:false,recipe:{servings:1,ingredients:[{name:'Arroz',quantity:100,unit:'g'}],steps:[],sourceUrl:'',notes:'',reviewed:true}}));
 const state=initialState();const month='2026-10';state.menus[month]=generateMenu(month,catalog,state.settings,state.menus);const menu=state.menus[month],date=menu.days[0].date;
+assert.equal(normalizeSettings({...state.settings,newRecipeSuggestions:undefined} as unknown as Settings).newRecipeSuggestions,2);
+for(const count of [0,1,4]){const configured=initialState();configured.settings.newRecipeSuggestions=count;const generated=addSuggestions(generateMenu(month,catalog,configured.settings,{}),catalog,{},undefined,pilot);assert.equal(generated.days.filter(d=>d.suggestion).length,count);}
 const currentDay=()=>menu.days[0];
 const marta=structuredClone(menu.days[0].meals.Marta);
 editPerson(menu,catalog,state.menus,{date,person:'Dani',mealType:'Comida',mode:'out',note:'Trabajo'},pilot);

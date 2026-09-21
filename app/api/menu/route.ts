@@ -10,7 +10,7 @@ import {generateMenu,generateDay,menuWarnings,validateDay,monthDates,normalize,n
 
 const month=z.string().regex(/^20\d{2}-(0[1-9]|1[0-2])$/);
 const diners=z.array(z.object({id:z.string().regex(/^[a-zA-Z0-9_-]{1,80}$/).refine(v=>!['Ambos','__proto__','constructor','prototype'].includes(v)),name:z.string().trim().min(1).max(40)})).min(1).max(12).refine(ds=>new Set(ds.map(d=>d.id)).size===ds.length&&new Set(ds.map(d=>normalize(d.name))).size===ds.length,'Los nombres no pueden repetirse.');
-const settings=z.object({diners:diners.optional(),days:z.array(z.number().int().min(0).max(6)).min(1).max(7),summerMonths:z.array(z.number().int().min(1).max(12)).max(12),repeatDays:z.number().int().min(1).max(90),mealTypes:z.array(z.enum(['Desayuno','Comida','Merienda','Cena'])).min(1).max(4)});
+const settings=z.object({diners:diners.optional(),days:z.array(z.number().int().min(0).max(6)).min(1).max(7),summerMonths:z.array(z.number().int().min(1).max(12)).max(12),repeatDays:z.number().int().min(1).max(90),mealTypes:z.array(z.enum(['Desayuno','Comida','Merienda','Cena'])).min(1).max(4),newRecipeSuggestions:z.number().int().min(0).max(10)});
 const dish=dishSchema;
 const manual=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('custom'),entries:z.record(z.string().trim().min(1).max(240)).optional(),Dani:z.string().trim().min(1).max(240).optional(),Marta:z.string().trim().min(1).max(240).optional()}),
