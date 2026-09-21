@@ -20,7 +20,7 @@ function tag(category:string){return `category cat-${normalize(category)}`}
 export default function Planner(){
  const [tab,setTab]=useState('menu');const [month,setMonth]=useState(()=>nextMonth(currentMonth()));
  const [data,setData]=useState<Payload>({state:initialState(),revision:0,catalog:seed as Dish[]});const latest=useRef(data);
- const [busy,setBusy]=useState(false),[loading,setLoading]=useState(true),[error,setError]=useState(''),[notice,setNotice]=useState(''),[auth,setAuth]=useState(false);
+ const [busy,setBusy]=useState(false),[loading,setLoading]=useState(true),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const [query,setQuery]=useState(''),[category,setCategory]=useState(''),[person,setPerson]=useState(''),[onlyReview,setOnlyReview]=useState(false),[limit,setLimit]=useState(40);
  const [edit,setEdit]=useState<Dish|null>(null),[prefs,setPrefs]=useState<Settings>(initialState().settings);
  const [dishRecipe,setDishRecipe]=useState<Dish|null>(null),[importOpen,setImportOpen]=useState(false);
@@ -28,7 +28,7 @@ export default function Planner(){
  const [editDay,setEditDay]=useState<Day|null>(null);
  const dialog=useRef<HTMLDialogElement>(null);const inflight=useRef(false);
  function accept(result:Payload){latest.current=result;setData(result)}
- async function load(){setLoading(true);setError('');try{const r=await fetch('/api/menu');const j=await r.json() as Payload & {error:string};if(!r.ok){setAuth(r.status===401);throw new Error(j.error)}accept(j);setPrefs(j.state.settings);setAuth(false)}catch(e){setError(e instanceof Error?e.message:'No se ha podido conectar.')}finally{setLoading(false)}}
+ async function load(){setLoading(true);setError('');try{const r=await fetch('/api/menu');const j=await r.json() as Payload & {error:string};if(!r.ok){throw new Error(j.error)}accept(j);setPrefs(j.state.settings)}catch(e){setError(e instanceof Error?e.message:'No se ha podido conectar.')}finally{setLoading(false)}}
  useEffect(()=>{void load()},[]);
  async function act(action:Record<string,unknown>,message='Cambios guardados'){
   if(inflight.current)throw new Error('Espera a que termine la operación actual.');inflight.current=true;setBusy(true);setError('');setNotice('');
@@ -51,7 +51,7 @@ export default function Planner(){
  for(const date of allDays){const dow=new Date(date+'T12:00:00Z').getUTCDay();if(dow===1&&row.some(Boolean)){weeks.push(row);row=Array(activeDays.length).fill(null)}const col=activeDays.indexOf(dow);if(col>=0)row[col]=date}if(row.some(Boolean))weeks.push(row);
  const filtered=data.catalog.filter(d=>normalize(d.name).includes(normalize(query))&&(!category||d.category===category)&&(!person||d.diners.includes(person))&&(!onlyReview||d.review));
  const saved=Object.values(data.state.menus).sort((a,b)=>b.month.localeCompare(a.month));
- const next=nextMonth(month);const available=!loading&&!busy&&!auth;
+ const next=nextMonth(month);const available=!loading&&!busy;
  const shared=menu?.days.filter(d=>!d.suggestion&&!activeMealTypes.some(type=>Object.keys(personalFor(d,type)).length)&&(d.manual?d.manual.kind==='custom'&&new Set(people.map(p=>manualEntries(d.manual as Extract<import('../lib/menu').ManualMeal,{kind:'custom'}>)[p])).size===1:activeMealTypes.every(type=>new Set(people.map(p=>(mealsFor(d,type)[p]??[]).map(x=>x.id).join())).size===1))).length??0;
  const plannedCount=menu?menu.days.filter(d=>!d.manual||d.manual.kind==='custom').length:dates.length;
  function openEdit(d:Dish){setError('');setEdit({...d})}
@@ -66,7 +66,7 @@ export default function Planner(){
  <main><header className="topline"><span>EL MENÚ DE CASA</span><span>{diners.map(p=>p.name).join(' · ')} · {selectedMealTypes(data.state.settings).join(' · ')}</span></header>
  <section className="heading"><div><p className="eyebrow">{tab==='shopping'?'ANTES DE IR A COMPRAR':tab==='recipes'?'ALGO NUEVO EN LA MESA':tab==='menu'?'PLANIFICAMOS EL MES':tab==='catalog'?'VUESTRA COCINA':tab==='history'?'LO QUE HEMOS PREPARADO':'A VUESTRO GUSTO'}</p><h1>{tab==='shopping'?'Lista de la compra':tab==='recipes'?'Descubrir recetas':tab==='menu'?'¿Qué comemos?':tab==='catalog'?'Nuestros platos':tab==='history'?'Meses guardados':'Preferencias'}</h1><p>{tab==='shopping'?'Toda vuestra compra: ingredientes del menú y productos que añadáis.':tab==='recipes'?'Nuevas ideas, ingredientes conocidos y recetas en español.':tab==='menu'?'Vuestros platos de siempre, con un poco más de orden.':tab==='catalog'?'El catálogo del Excel, listo para revisar y ajustar.':tab==='history'?'Los meses confirmados ayudan a variar los siguientes.':'Decidid qué días cocinar y cómo repartir las recetas.'}</p></div>{tab==='catalog'&&<div className="catalog-actions"><button disabled={!available} onClick={()=>exportCatalog(data.catalog)}><Download size={17}/>Exportar JSON</button><button disabled={!available} onClick={()=>setImportOpen(true)}><Upload size={17}/>Importar JSON</button><button className="primary" disabled={!available} onClick={newDish}><Plus size={18}/>Nuevo plato</button></div>}{tab==='history'&&<button disabled={!available} onClick={exportData}><Download size={18}/>Exportar copia</button>}</section>
  {loading&&<div className="message"><LoaderCircle className="spin" size={18}/>Cargando vuestros menús…</div>}
- {error&&<div className="message error" role="alert"><AlertCircle size={18}/><span>{error}</span>{auth?<a href="/signin-with-chatgpt?return_to=/" target="_top">Iniciar sesión</a>:<button onClick={()=>void load()}>Recargar</button>}</div>}
+ {error&&<div className="message error" role="alert"><AlertCircle size={18}/><span>{error}</span><button onClick={()=>void load()}>Recargar</button></div>}
  {notice&&<div className="message success" role="status"><Check size={18}/>{notice}</div>}
  {tab==='menu'&&<>
  <section className="monthbar"><div><button aria-label="Mes anterior" onClick={()=>setMonth(nextMonth(month,-1))}><ChevronLeft size={20}/></button><h2>{title(month)}</h2><button aria-label="Mes siguiente" onClick={()=>setMonth(next)}><ChevronRight size={20}/></button></div><span className="pill">{plannedCount} días · {activeMealTypes.join(', ')} · {menu?.status==='confirmed'?'Confirmado':menu?'Borrador':'Por preparar'}</span></section>

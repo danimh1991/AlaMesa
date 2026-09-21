@@ -6,7 +6,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "test": "node scripts/test-recipe-workflows.mjs",
+    "test": "node scripts/test-recipe-workflows.mjs && node scripts/test-auth.mjs",
     "typecheck": "tsc --noEmit --incremental false",
     "install:ci": "node scripts/install-ci.mjs",
     "dev": "node scripts/run-framework.mjs dev",
@@ -14,7 +14,8 @@
     "start": "node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1 --inspector-port 0",
     "recipes:index": "node scripts/build-recipe-index.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "deploy:cloudflare": "wrangler deploy --config dist/server/wrangler.json --name alamesa --keep-vars"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -27,6 +28,7 @@
     "drizzle-orm": "0.45.2",
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.4.2",
+    "jose": "6.2.12",
     "lucide-react": "^1.31.0",
     "next": "16.3.4",
     "next-themes": "^0.4.6",

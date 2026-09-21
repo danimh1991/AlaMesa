@@ -7,7 +7,7 @@ import {addSuggestions,acceptRecipe,suggestForDay,poolFor,resolveRecipe,editPers
 import seed from '../../../lib/catalog.json';
 import {readState,saveState} from '../../../lib/storage';
 import {generateMenu,generateDay,menuWarnings,validateDay,monthDates,normalize,normalizeDish,peopleFor,emptyMeals,selectedMealTypes,mealsFor,setMealsFor,personalFor,setPersonalFor,validateDay as validateManual,type Dish,type State} from '../../../lib/menu';
-import {getChatGPTUser} from '../../chatgpt-auth';
+
 const month=z.string().regex(/^20\d{2}-(0[1-9]|1[0-2])$/);
 const diners=z.array(z.object({id:z.string().regex(/^[a-zA-Z0-9_-]{1,80}$/).refine(v=>!['Ambos','__proto__','constructor','prototype'].includes(v)),name:z.string().trim().min(1).max(40)})).min(1).max(12).refine(ds=>new Set(ds.map(d=>d.id)).size===ds.length&&new Set(ds.map(d=>normalize(d.name))).size===ds.length,'Los nombres no pueden repetirse.');
 const settings=z.object({diners:diners.optional(),days:z.array(z.number().int().min(0).max(6)).min(1).max(7),summerMonths:z.array(z.number().int().min(1).max(12)).max(12),repeatDays:z.number().int().min(1).max(90),mealTypes:z.array(z.enum(['Desayuno','Comida','Merienda','Cena'])).min(1).max(4)});
@@ -41,9 +41,9 @@ const input=z.discriminatedUnion('action',[
  z.object({action:z.literal('create-dish'),dish:dish.omit({id:true}),revision:z.number().int().min(0)}),
  z.object({action:z.literal('day-manual'),month,date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),manual,revision:z.number().int().min(0)})]);
 const json=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
-export async function GET(){if(!await getChatGPTUser())return json({error:'Inicia sesión para ver vuestro menú.'},401);try{const data=await readState();return json({...data,catalog:catalogFor(data.state)})}catch(e){console.error('Menu read',e);return json({error:'No se han podido cargar los menús. Inténtalo de nuevo.'},503)}}
+export async function GET(){try{const data=await readState();return json({...data,catalog:catalogFor(data.state)})}catch(e){console.error('Menu read',e);return json({error:'No se han podido cargar los menús. Inténtalo de nuevo.'},503)}}
 export async function POST(request:Request){
- if(!await getChatGPTUser())return json({error:'Inicia sesión para guardar los cambios.'},401);
+
  if(request.headers.get('origin')&&request.headers.get('origin')!==new URL(request.url).origin)return json({error:'Origen no permitido.'},403);
  let body;try{const raw=await request.text();if(new TextEncoder().encode(raw).length>1500000)return json({error:'El archivo supera el límite de 1,5 MB. Divide la importación en varios archivos.'},413);body=input.parse(JSON.parse(raw))}catch{return json({error:'Los datos enviados no son válidos.'},400)}
  try{const {state,revision}=await readState();if(revision!==body.revision)return json({error:'Hay cambios guardados desde otra pestaña. Recarga antes de continuar.'},409);
