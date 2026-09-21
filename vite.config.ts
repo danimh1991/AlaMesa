@@ -10,6 +10,10 @@ const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
 const D1_DATABASE_ID =
   process.env.D1_DATABASE_ID ?? SITE_CREATOR_PLACEHOLDER_DATABASE_ID;
 
+// En Sites/Codex no estará definida y la aplicación seguirá viviendo en "/".
+// En Cloudflare configuraremos APP_BASE_PATH="/alamesa".
+const APP_BASE_PATH = process.env.APP_BASE_PATH ?? "";
+
 const { d1, r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
@@ -62,11 +66,24 @@ export default defineConfig(async () => {
         ? { watch: { useFsEvents: false, usePolling: true } }
         : {}),
     },
+
     plugins: [
-      vinext(),
+      vinext({
+        nextConfig: APP_BASE_PATH
+          ? {
+              basePath: APP_BASE_PATH,
+            }
+          : {},
+      }),
+
+      // Mantener la integración con Sites.
       sites({ mockAuth: !managedLinux }),
+
       cloudflare({
-        viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
+        viteEnvironment: {
+          name: "rsc",
+          childEnvironments: ["ssr"],
+        },
         inspectorPort: false,
         config: localBindingConfig,
       }),
