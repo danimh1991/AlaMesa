@@ -7,7 +7,7 @@ export async function saveState(state:State,revision:number){const serialized=JS
 function normalizeMeals(day:Day,legacyType:MealType,settings:Settings){
  const source=day.mealsByType??{[legacyType]:day.meals};const normalized:Day['mealsByType']={};
  for(const [type,people] of Object.entries(source) as [MealType,Record<string,Dish[]>][]){normalized[type]=Object.fromEntries(Object.entries(people).map(([person,dishes])=>[person,dishes.map(d=>normalizeDish(d))]));}
- day.mealsByType=normalized;day.meals=normalized.Comida??emptyMeals(settings);
+ day.mealsByType=normalized;day.meals=normalized.Comida??emptyMeals(settings);if(day.personal){day.personalByType??={};day.personalByType.Comida??=day.personal;}if(day.personalByType?.Comida)day.personal=day.personalByType.Comida;
 }
 function normalizeState(state:State){
  state.settings=normalizeSettings(state.settings);
