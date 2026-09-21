@@ -9,6 +9,7 @@ import ImportCatalog,{exportCatalog} from './catalog-transfer';
 import DayEditor from './day-editor';
 import seed from '../lib/catalog.json';
 import {initialState,monthDates,normalize,dinersFor,peopleFor,dinerName,manualEntries,mealTypes,selectedMealTypes,mealsFor,personalFor,type State,type Dish,type Settings,type Day,type MealType} from '../lib/menu';
+import {appPath,readJson} from '../lib/client-http';
 type Payload={state:State;revision:number;catalog:Dish[]};
 const dayNames=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const months=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -28,11 +29,11 @@ export default function Planner(){
  const [editDay,setEditDay]=useState<Day|null>(null);
  const dialog=useRef<HTMLDialogElement>(null);const inflight=useRef(false);
  function accept(result:Payload){latest.current=result;setData(result)}
- async function load(){setLoading(true);setError('');try{const r=await fetch('/api/menu');const j=await r.json() as Payload & {error:string};if(!r.ok){throw new Error(j.error)}accept(j);setPrefs(j.state.settings)}catch(e){setError(e instanceof Error?e.message:'No se ha podido conectar.')}finally{setLoading(false)}}
+ async function load(){setLoading(true);setError('');try{const r=await fetch(appPath('/api/menu'));const j=await readJson<Payload & {error:string}>(r);if(!r.ok){throw new Error(j.error)}accept(j);setPrefs(j.state.settings)}catch(e){setError(e instanceof Error?e.message:'No se ha podido conectar.')}finally{setLoading(false)}}
  useEffect(()=>{void load()},[]);
  async function act(action:Record<string,unknown>,message='Cambios guardados'){
   if(inflight.current)throw new Error('Espera a que termine la operación actual.');inflight.current=true;setBusy(true);setError('');setNotice('');
-  try{const r=await fetch('/api/menu',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...action,revision:latest.current.revision})});const j=await r.json() as Payload & {error:string};if(!r.ok)throw new Error(j.error);accept(j);setNotice(message);return j as Payload}catch(e){setError(e instanceof Error?e.message:'No se han guardado los cambios.');throw e}finally{inflight.current=false;setBusy(false)}
+  try{const r=await fetch(appPath('/api/menu'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...action,revision:latest.current.revision})});const j=await readJson<Payload & {error:string}>(r);if(!r.ok)throw new Error(j.error);accept(j);setNotice(message);return j as Payload}catch(e){setError(e instanceof Error?e.message:'No se han guardado los cambios.');throw e}finally{inflight.current=false;setBusy(false)}
  }
  function run(action:Record<string,unknown>,message?:string){void act(action,message).catch(()=>{})}
  useEffect(()=>{const ctx=(document as unknown as {modelContext?:{registerTool:(tool:unknown,options:unknown)=>Promise<void>}}).modelContext;if(!ctx?.registerTool)return;const lifecycle=new AbortController();
