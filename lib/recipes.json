@@ -4620,5 +4620,520 @@
       "reviewed": false,
       "originalIngredients": "100 g Cebolla , 1 Pimiento verde italiano , 2 Zanahoria , 200 g Salmón fresco , 5 g Pimienta negra molida al gusto, Sal "
     }
+  },
+  {
+    "id": "abuela-11100",
+    "rowIndex": 10954,
+    "name": "tallarines con romero",
+    "originalName": "tallarines con romero",
+    "category": "Pasta",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "2 tazas de tallarines ya cocidos",
+      "1 taza de mantequilla",
+      "1 cucharadita bien llena de romero",
+      "1/2 taza de queso parmesano rallado"
+    ],
+    "steps": [
+      "1 Cocinar los tallarines con agua hirviendo con sal y aceite hasta que estén en su punto.",
+      "2 Escurrirlos.",
+      "3 En una sartén calentar la mantequilla, agregar el romero.",
+      "4 Mover bien.",
+      "5 Agregar los tallarines.",
+      "6 Servir y agregar el queso parmesano rallado."
+    ],
+    "notes": "Clasificación orientativa. Revisa raciones y cantidades antes de añadir los ingredientes a la compra.",
+    "source": "https://www.recetasgratis.net/receta-de-tallarines-con-romero-22537.html",
+    "providerUrl": "https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela",
+    "provider": "Recetas de la Abuela",
+    "servings": null,
+    "originalIngredients": "2 tazas de tallarines ya cocidos\n1 taza de mantequilla\n1 cucharadita bien llena de romero\n1/2 taza de queso parmesano rallado",
+    "details": {
+      "servings": null,
+      "ingredients": [
+        {
+          "name": "2 tazas de tallarines ya cocidos",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1 taza de mantequilla",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1 cucharadita bien llena de romero",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1/2 taza de queso parmesano rallado",
+          "quantity": null,
+          "unit": ""
+        }
+      ],
+      "steps": [
+        "1 Cocinar los tallarines con agua hirviendo con sal y aceite hasta que estén en su punto.",
+        "2 Escurrirlos.",
+        "3 En una sartén calentar la mantequilla, agregar el romero.",
+        "4 Mover bien.",
+        "5 Agregar los tallarines.",
+        "6 Servir y agregar el queso parmesano rallado."
+      ],
+      "sourceUrl": "https://www.recetasgratis.net/receta-de-tallarines-con-romero-22537.html",
+      "notes": "Clasificación orientativa. Revisa raciones y cantidades antes de añadir los ingredientes a la compra.",
+      "reviewed": false,
+      "originalIngredients": "2 tazas de tallarines ya cocidos\n1 taza de mantequilla\n1 cucharadita bien llena de romero\n1/2 taza de queso parmesano rallado"
+    }
+  },
+  {
+    "id": "abuela-2362",
+    "rowIndex": 2340,
+    "name": "pate vegetariano de tofu",
+    "originalName": "pate vegetariano de tofu",
+    "category": "Verduras",
+    "type": "Único",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "200 gr de Tofu",
+      "Dientes de ajo al gusto",
+      "5 pimientos del piquillo de lata",
+      "1 cucharada de aceite de oliva"
+    ],
+    "steps": [
+      "1 Se echan todos los ingredientes en el vaso de la batidora y se bate hasta que quede una mezcla homogénea y sin grumos.",
+      "2 Se deja enfriar (recién hecho queda tipo salsa pero cuando enfría coge textura de paté) y se sirve con pan"
+    ],
+    "notes": "Clasificación orientativa. Revisa raciones y cantidades antes de añadir los ingredientes a la compra.",
+    "source": "https://www.recetasgratis.net/receta-de-pate-vegetariano-de-tofu-50405.html",
+    "providerUrl": "https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela",
+    "provider": "Recetas de la Abuela",
+    "servings": null,
+    "originalIngredients": "200 gr de Tofu\nDientes de ajo al gusto\n5 pimientos del piquillo de lata\n1 cucharada de aceite de oliva",
+    "details": {
+      "servings": null,
+      "ingredients": [
+        {
+          "name": "200 gr de Tofu",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Dientes de ajo al gusto",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "5 pimientos del piquillo de lata",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1 cucharada de aceite de oliva",
+          "quantity": null,
+          "unit": ""
+        }
+      ],
+      "steps": [
+        "1 Se echan todos los ingredientes en el vaso de la batidora y se bate hasta que quede una mezcla homogénea y sin grumos.",
+        "2 Se deja enfriar (recién hecho queda tipo salsa pero cuando enfría coge textura de paté) y se sirve con pan"
+      ],
+      "sourceUrl": "https://www.recetasgratis.net/receta-de-pate-vegetariano-de-tofu-50405.html",
+      "notes": "Clasificación orientativa. Revisa raciones y cantidades antes de añadir los ingredientes a la compra.",
+      "reviewed": false,
+      "originalIngredients": "200 gr de Tofu\nDientes de ajo al gusto\n5 pimientos del piquillo de lata\n1 cucharada de aceite de oliva"
+    }
+  },
+  {
+    "id": "abuela-2352",
+    "rowIndex": 2330,
+    "name": "empanadas de pollo y champinones",
+    "originalName": "empanadas de pollo y champinones",
+    "category": "Pollo",
+    "type": "Principal",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "500 gramos de Masa para empanadas",
+      "2 pechugas de Pollo",
+      "1 Pimiento rojo o morrón",
+      "300 gramos de Champiñones laminados",
+      "¼ Cebolla cabezona o de huevo",
+      "1 diente de Ajo",
+      "2 onzas de Vino blanco seco",
+      "3 onzas de Crema de leche",
+      "1 pizca de Sal",
+      "1 pizca de Pimienta",
+      "Aceite"
+    ],
+    "steps": [
+      "1 Para empezar a preparar las empanadas de pollo y champiñones lo primero que tenemos que hacer es alistar todos los ingredientes que vamos a utilizar.",
+      "2 Seguidamente en una olla, poner las pechugas de pollo sin piel a cocinar con agua y una pizca de sal. Dejar hervir el pollo hasta que se cocine por completo.",
+      "3 Mientras tanto, picar el pimiento, el ajo y la cebolla finamente.",
+      "4 Después en una sartén poner 4 cucharadas de aceite y sofreír el ajo, la cebolla y el pimiento a fuego medio por 10 minutos.",
+      "5 A continuación, agregar el vino y dejar reducir a la mitad. Agregar los champiñones también y dejar cocinar todo el relleno de las empanadas de pollo y cebolla un poco más..",
+      "6 Cuando el pollo esté cocido, lo desmenuzamos y lo agregamos al sofrito de champiñones de las empanadas caseras.",
+      "7 Luego agregamos la crema de leche, dejamos espesar, rectificamos sal y pimienta y dejamos enfriar el sofrito.",
+      "8 Entonces estiramos la masa para las empanadas caseras y las rellenamos. Puedes ayudarte de un molde para empanadillas si lo deseas.",
+      "9 Una vez formadas, freímos las empanadas de pollo y champiñones con poco aceite a fuego medio durante 5 minutos por cada lado.",
+      "10 Listo, una vez fritas y escurridas ya podemos servir las empanadas de pollo y champiñones a la mesa ¡y a disfrutar!"
+    ],
+    "notes": "Clasificación orientativa. Revisa raciones y cantidades antes de añadir los ingredientes a la compra.",
+    "source": "https://www.recetasgratis.net/receta-de-empanadas-de-pollo-y-champinones-50597.html",
+    "providerUrl": "https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela",
+    "provider": "Recetas de la Abuela",
+    "servings": 2,
+    "originalIngredients": "500 gramos de Masa para empanadas\n2 pechugas de Pollo\n1 Pimiento rojo o morrón\n300 gramos de Champiñones laminados\n¼ Cebolla cabezona o de huevo\n1 diente de Ajo\n2 onzas de Vino blanco seco\n3 onzas de Crema de leche\n1 pizca de Sal\n1 pizca de Pimienta\nAceite",
+    "details": {
+      "servings": 2,
+      "ingredients": [
+        {
+          "name": "500 gramos de Masa para empanadas",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "2 pechugas de Pollo",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1 Pimiento rojo o morrón",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "300 gramos de Champiñones laminados",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "¼ Cebolla cabezona o de huevo",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1 diente de Ajo",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "2 onzas de Vino blanco seco",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "3 onzas de Crema de leche",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1 pizca de Sal",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1 pizca de Pimienta",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Aceite",
+          "quantity": null,
+          "unit": ""
+        }
+      ],
+      "steps": [
+        "1 Para empezar a preparar las empanadas de pollo y champiñones lo primero que tenemos que hacer es alistar todos los ingredientes que vamos a utilizar.",
+        "2 Seguidamente en una olla, poner las pechugas de pollo sin piel a cocinar con agua y una pizca de sal. Dejar hervir el pollo hasta que se cocine por completo.",
+        "3 Mientras tanto, picar el pimiento, el ajo y la cebolla finamente.",
+        "4 Después en una sartén poner 4 cucharadas de aceite y sofreír el ajo, la cebolla y el pimiento a fuego medio por 10 minutos.",
+        "5 A continuación, agregar el vino y dejar reducir a la mitad. Agregar los champiñones también y dejar cocinar todo el relleno de las empanadas de pollo y cebolla un poco más..",
+        "6 Cuando el pollo esté cocido, lo desmenuzamos y lo agregamos al sofrito de champiñones de las empanadas caseras.",
+        "7 Luego agregamos la crema de leche, dejamos espesar, rectificamos sal y pimienta y dejamos enfriar el sofrito.",
+        "8 Entonces estiramos la masa para las empanadas caseras y las rellenamos. Puedes ayudarte de un molde para empanadillas si lo deseas.",
+        "9 Una vez formadas, freímos las empanadas de pollo y champiñones con poco aceite a fuego medio durante 5 minutos por cada lado.",
+        "10 Listo, una vez fritas y escurridas ya podemos servir las empanadas de pollo y champiñones a la mesa ¡y a disfrutar!"
+      ],
+      "sourceUrl": "https://www.recetasgratis.net/receta-de-empanadas-de-pollo-y-champinones-50597.html",
+      "notes": "Clasificación orientativa. Revisa raciones y cantidades antes de añadir los ingredientes a la compra.",
+      "reviewed": false,
+      "originalIngredients": "500 gramos de Masa para empanadas\n2 pechugas de Pollo\n1 Pimiento rojo o morrón\n300 gramos de Champiñones laminados\n¼ Cebolla cabezona o de huevo\n1 diente de Ajo\n2 onzas de Vino blanco seco\n3 onzas de Crema de leche\n1 pizca de Sal\n1 pizca de Pimienta\nAceite"
+    }
+  },
+  {
+    "id": "abuela-11014",
+    "rowIndex": 10868,
+    "name": "lasagna de atun",
+    "originalName": "lasagna de atun",
+    "category": "Pescado",
+    "type": "Principal",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "2 latas de atun",
+      "5 tomates",
+      "2 cebollas paiteñas finamente picadas",
+      "1/4 de pimiento verde`picado",
+      "harina",
+      "mantequilla",
+      "leche",
+      "nuez moscada",
+      "oregano",
+      "1 taza de agua",
+      "pasta para lasagna",
+      "queso mozarella"
+    ],
+    "steps": [
+      "1 Primero: Haces un refrito de cebolla, tomate y el pimiento y lo licuas aumentandole una taza de agua y sal al gusto, de ahi lo pones en la sarten y le hechas el atun.",
+      "2 Despues engrasas el molde con la mantequilla y pones la pasta de ahi le hechas el refrito ya terminado, le pones queso mozarella a tu gusto y luego pones otra capa de pasta y hechas lo ultimo de el refrito y agregas mas queso mozarella al final lo cubres con otra capa de pasta.",
+      "3 Para la cubierta final pones en una sarten aparte mantequilla, esperas a que se derrita y le hechas la harina de tal manera que cubra la mantequilla. Lo mezclas y de ahi le echas leche y la mezclas con la harina y la mantequilla.",
+      "4 De ahi esa mezcla la pones en la licuadora y le pones otro poco de leche y la nuez mozcada (no mucha), al terminar de licuarla la pones ensima de la ultima capa de lasagna y por ultimo le echas oregano, y lo metes al horno y esperas hasta que este lista."
+    ],
+    "notes": "Clasificación orientativa. Revisa raciones y cantidades antes de añadir los ingredientes a la compra.",
+    "source": "https://www.recetasgratis.net/receta-de-lasagna-de-atun-33589.html",
+    "providerUrl": "https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela",
+    "provider": "Recetas de la Abuela",
+    "servings": null,
+    "originalIngredients": "2 latas de atun\n5 tomates\n2 cebollas paiteñas finamente picadas\n1/4 de pimiento verde`picado\nharina\nmantequilla\nleche\nnuez moscada\noregano\n1 taza de agua\npasta para lasagna\nqueso mozarella",
+    "details": {
+      "servings": null,
+      "ingredients": [
+        {
+          "name": "2 latas de atun",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "5 tomates",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "2 cebollas paiteñas finamente picadas",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1/4 de pimiento verde`picado",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "harina",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "mantequilla",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "leche",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "nuez moscada",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "oregano",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1 taza de agua",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "pasta para lasagna",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "queso mozarella",
+          "quantity": null,
+          "unit": ""
+        }
+      ],
+      "steps": [
+        "1 Primero: Haces un refrito de cebolla, tomate y el pimiento y lo licuas aumentandole una taza de agua y sal al gusto, de ahi lo pones en la sarten y le hechas el atun.",
+        "2 Despues engrasas el molde con la mantequilla y pones la pasta de ahi le hechas el refrito ya terminado, le pones queso mozarella a tu gusto y luego pones otra capa de pasta y hechas lo ultimo de el refrito y agregas mas queso mozarella al final lo cubres con otra capa de pasta.",
+        "3 Para la cubierta final pones en una sarten aparte mantequilla, esperas a que se derrita y le hechas la harina de tal manera que cubra la mantequilla. Lo mezclas y de ahi le echas leche y la mezclas con la harina y la mantequilla.",
+        "4 De ahi esa mezcla la pones en la licuadora y le pones otro poco de leche y la nuez mozcada (no mucha), al terminar de licuarla la pones ensima de la ultima capa de lasagna y por ultimo le echas oregano, y lo metes al horno y esperas hasta que este lista."
+      ],
+      "sourceUrl": "https://www.recetasgratis.net/receta-de-lasagna-de-atun-33589.html",
+      "notes": "Clasificación orientativa. Revisa raciones y cantidades antes de añadir los ingredientes a la compra.",
+      "reviewed": false,
+      "originalIngredients": "2 latas de atun\n5 tomates\n2 cebollas paiteñas finamente picadas\n1/4 de pimiento verde`picado\nharina\nmantequilla\nleche\nnuez moscada\noregano\n1 taza de agua\npasta para lasagna\nqueso mozarella"
+    }
+  },
+  {
+    "id": "abuela-11058",
+    "rowIndex": 10912,
+    "name": "canelones de puerros con gambas y crema americana",
+    "originalName": "canelones de puerros con gambas y crema americana",
+    "category": "Pasta",
+    "type": "Entrante",
+    "season": "Ambos",
+    "complexity": 2,
+    "ingredients": [
+      "4 puerros grandes cocidos",
+      "200 gramos de cebolla",
+      "1 pimiento verde",
+      "100 gramos de gambas",
+      "30 gramos de harina",
+      "½ litro de leche",
+      "4 cucharadas de aceite de oliva",
+      "Sal",
+      "100 gramos zanahoria",
+      "100 gramos de cebolla",
+      "100 gramos de puerros",
+      "1 tomate maduro",
+      "10 gramos de arroz",
+      "¼ vaso de coñac",
+      "¼ litro de caldo de pescado",
+      "3 cucharadas de aceite de oliva",
+      "Sal"
+    ],
+    "steps": [
+      "1 Cortamos la cebolla y el pimiento verde en brounoisse (cuadradito pequeño) y los pochamos en una sartén a fuego suave hasta que se ablande.",
+      "2 Una vez pochada la cebolla y el pimiento, añadimos las gambas peladas y troceadas.",
+      "3 Ligamos el refrito de las gambas con un poco de harina y añadimos un poco de leche hasta formar una masa compacta.",
+      "4 Con esta masa rellenamos los canelones de los puerros.",
+      "5 Salseamos con la salsa de marisco los puerros y los gratinamos ligeramente en el horno.",
+      "6 Para elaborar la crema de marisco, picamos en juliana (en tiras finas) la cebolla y el puerro.",
+      "7 Los ponemos a cocinar junto con la zanahoria y un poco de aceite y sal hasta que se ablanden.",
+      "8 Añadimos a continuación el tomate cortado en gajos y las gambas enteras, quitando con ayuda de un cuchillo los ojos de las gambas, ya que una vez triturado en la crema quedarían pequeños puntos negros.",
+      "9 Flambeamos con coñac el contenido de la cazuela, añadimos el arroz y mojamos con 2 litros de fumet o caldo de pescado.",
+      "10 Dejamos hervir a fuego suave durante 30 minutos.",
+      "11 Trituramos con la batidora y pasamos por el pasapurés.",
+      "12 A continuación, volvemos a pasar la crema por el colador fino para que no pase ninguna cascarilla del marisco.",
+      "13 Por ultimo ponemos a punto de sal.",
+      "14 Para 4 personas."
+    ],
+    "notes": "Clasificación orientativa. Revisa raciones y cantidades antes de añadir los ingredientes a la compra.",
+    "source": "https://www.recetasgratis.net/receta-de-canelones-de-puerros-con-gambas-y-crema-americana-28009.html",
+    "providerUrl": "https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela",
+    "provider": "Recetas de la Abuela",
+    "servings": null,
+    "originalIngredients": "4 puerros grandes cocidos\n200 gramos de cebolla\n1 pimiento verde\n100 gramos de gambas\n30 gramos de harina\n½ litro de leche\n4 cucharadas de aceite de oliva\nSal\n100 gramos zanahoria\n100 gramos de cebolla\n100 gramos de puerros\n1 tomate maduro\n10 gramos de arroz\n¼ vaso de coñac\n¼ litro de caldo de pescado\n3 cucharadas de aceite de oliva\nSal",
+    "details": {
+      "servings": null,
+      "ingredients": [
+        {
+          "name": "4 puerros grandes cocidos",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "200 gramos de cebolla",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1 pimiento verde",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "100 gramos de gambas",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "30 gramos de harina",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "½ litro de leche",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "4 cucharadas de aceite de oliva",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Sal",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "100 gramos zanahoria",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "100 gramos de cebolla",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "100 gramos de puerros",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "1 tomate maduro",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "10 gramos de arroz",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "¼ vaso de coñac",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "¼ litro de caldo de pescado",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "3 cucharadas de aceite de oliva",
+          "quantity": null,
+          "unit": ""
+        },
+        {
+          "name": "Sal",
+          "quantity": null,
+          "unit": ""
+        }
+      ],
+      "steps": [
+        "1 Cortamos la cebolla y el pimiento verde en brounoisse (cuadradito pequeño) y los pochamos en una sartén a fuego suave hasta que se ablande.",
+        "2 Una vez pochada la cebolla y el pimiento, añadimos las gambas peladas y troceadas.",
+        "3 Ligamos el refrito de las gambas con un poco de harina y añadimos un poco de leche hasta formar una masa compacta.",
+        "4 Con esta masa rellenamos los canelones de los puerros.",
+        "5 Salseamos con la salsa de marisco los puerros y los gratinamos ligeramente en el horno.",
+        "6 Para elaborar la crema de marisco, picamos en juliana (en tiras finas) la cebolla y el puerro.",
+        "7 Los ponemos a cocinar junto con la zanahoria y un poco de aceite y sal hasta que se ablanden.",
+        "8 Añadimos a continuación el tomate cortado en gajos y las gambas enteras, quitando con ayuda de un cuchillo los ojos de las gambas, ya que una vez triturado en la crema quedarían pequeños puntos negros.",
+        "9 Flambeamos con coñac el contenido de la cazuela, añadimos el arroz y mojamos con 2 litros de fumet o caldo de pescado.",
+        "10 Dejamos hervir a fuego suave durante 30 minutos.",
+        "11 Trituramos con la batidora y pasamos por el pasapurés.",
+        "12 A continuación, volvemos a pasar la crema por el colador fino para que no pase ninguna cascarilla del marisco.",
+        "13 Por ultimo ponemos a punto de sal.",
+        "14 Para 4 personas."
+      ],
+      "sourceUrl": "https://www.recetasgratis.net/receta-de-canelones-de-puerros-con-gambas-y-crema-americana-28009.html",
+      "notes": "Clasificación orientativa. Revisa raciones y cantidades antes de añadir los ingredientes a la compra.",
+      "reviewed": false,
+      "originalIngredients": "4 puerros grandes cocidos\n200 gramos de cebolla\n1 pimiento verde\n100 gramos de gambas\n30 gramos de harina\n½ litro de leche\n4 cucharadas de aceite de oliva\nSal\n100 gramos zanahoria\n100 gramos de cebolla\n100 gramos de puerros\n1 tomate maduro\n10 gramos de arroz\n¼ vaso de coñac\n¼ litro de caldo de pescado\n3 cucharadas de aceite de oliva\nSal"
+    }
   }
 ]
