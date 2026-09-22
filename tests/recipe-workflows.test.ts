@@ -7,6 +7,7 @@ const catalog:Dish[]=Array.from({length:5},(_,i)=>({id:i+1,name:`Plato ${i+1}`,c
 const state=initialState();const month='2026-10';state.menus[month]=generateMenu(month,catalog,state.settings,state.menus);const menu=state.menus[month],date=menu.days[0].date;
 assert.equal(normalizeSettings({...state.settings,newRecipeSuggestions:undefined} as unknown as Settings).newRecipeSuggestions,2);
 for(const count of [0,1,4]){const configured=initialState();configured.settings.newRecipeSuggestions=count;const generated=addSuggestions(generateMenu(month,catalog,configured.settings,{}),catalog,{},undefined,pilot);assert.equal(generated.days.filter(d=>d.suggestion).length,count);}
+const suggestionSettings={...initialState().settings,newRecipeSuggestions:2};const suggestedMenu=addSuggestions(generateMenu(month,catalog,suggestionSettings,{}),catalog,{},undefined,pilot);for(const day of suggestedMenu.days)assert.doesNotThrow(()=>validateDay(day,suggestionSettings));const regeneratedSuggestions=generateMenu(month,catalog,suggestionSettings,{[month]:suggestedMenu},suggestedMenu);assert.equal(regeneratedSuggestions.days.filter(d=>d.suggestion).length,2);
 const currentDay=()=>menu.days[0];
 const marta=structuredClone(menu.days[0].meals.Marta);
 editPerson(menu,catalog,state.menus,{date,person:'Dani',mealType:'Comida',mode:'out',note:'Trabajo'},pilot);
@@ -14,6 +15,7 @@ assert.deepEqual(menu.days[0].meals.Marta,marta);assert.equal(menu.days[0].perso
 validateDay(menu.days[0],menu.settings);
 menu.status='confirmed';const shopping=shoppingList({...menu,days:[menu.days[0]]},catalog);assert.equal(shopping.portions,1);assert.equal(shopping.items[0].quantity,100);menu.status='draft';
 editPerson(menu,catalog,state.menus,{date,person:'Dani',mealType:'Comida',mode:'generate'},pilot);assert.equal(currentDay().personal?.Dani,undefined);assert.deepEqual(currentDay().meals.Marta,marta);assert.ok(currentDay().meals.Dani.every(d=>d.diners.includes('Dani')));
+editPerson(menu,catalog,state.menus,{date,person:'Dani',mealType:'Comida',mode:'dish',dishId:2},pilot);assert.equal(currentDay().meals.Dani[0].id,2);assert.equal(currentDay().personal?.Dani,undefined);assert.deepEqual(currentDay().meals.Marta,marta);menu.status='confirmed';const selectedShopping=shoppingList({...menu,days:[currentDay()]},catalog);assert.equal(selectedShopping.portions,2);assert.equal(selectedShopping.items[0].quantity,200);menu.status='draft';assert.throws(()=>editPerson(menu,catalog,state.menus,{date,person:'Dani',mealType:'Comida',mode:'dish',dishId:5},pilot),/compatible/);
 editPerson(menu,catalog,state.menus,{date,person:'Dani',mealType:'Comida',mode:'suggest'},pilot);const proposal=currentDay().personal!.Dani;assert.equal(proposal.kind,'suggestion');if(proposal.kind!=='suggestion')throw Error();
 const recipe={...proposal.recipe,type:'Único',season:'Ambos'};
 state.discovery={recipes:[],updatedAt:new Date().toISOString()};assert.equal(resolveRecipe(state,recipe.id)?.id,recipe.id);
