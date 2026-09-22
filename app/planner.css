@@ -18,3 +18,34 @@ textarea{font:inherit;border:1px solid #d5dde2;border-radius:7px;padding:11px;re
 .multi-select{border:1px solid #d5dde2;border-radius:8px;margin-top:16px;padding:12px 14px 14px}.multi-select legend{padding:0 6px;font-size:14px}.multi-select .check{display:inline-flex!important;margin:4px 18px 0 0!important}.person-editor input[readonly]{background:#f1f5f3;color:#24483d;font-weight:600}
 
 .meal-type+.meal-type{border-top:1px solid #dce2e5;margin-top:18px;padding-top:14px}.meal-type h4{margin:0 0 11px;color:#315e52;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+
+.mobile-calendar-view{display:none}
+@media(max-width:850px){
+ .mobile-calendar-view{display:flex;align-items:center;gap:4px;width:max-content;max-width:100%;margin:0 0 14px;padding:4px;border:1px solid #dce2e5;border-radius:10px;background:#fff}
+ .mobile-calendar-view button{min-height:36px;padding:7px 11px;border:0;background:transparent;font-size:13px}
+ .mobile-calendar-view button.active{background:#e9f0ed;color:#163e38;font-weight:700}
+ .mobile-month-view .calendar .weekday-row{display:grid}
+ .mobile-month-view .calendar-week{grid-template-columns:repeat(var(--columns),minmax(0,1fr))}
+ .mobile-month-view .calendar-week+.calendar-week{border-top:1px solid #dce2e5}
+ .mobile-month-view .weekday-row>div{min-width:0;padding:9px 4px;overflow:hidden;font-size:9px;text-align:center;white-space:nowrap}
+ .mobile-month-view .day{display:block;min-width:0;min-height:116px;padding:6px 4px;border-right:1px solid #e5e9eb;border-bottom:0;overflow:hidden}
+ .mobile-month-view .day:last-child{border-right:0}
+ .mobile-month-view .day.outside{display:block}
+ .mobile-month-view .day-top{margin-bottom:5px}
+ .mobile-month-view .day-top em,.mobile-month-view .day-top>div{display:none}
+ .mobile-month-view .day-top b{font-size:13px}
+ .mobile-month-view .meal-type h4{margin-bottom:4px;font-size:7px;letter-spacing:0}
+ .mobile-month-view .meal-type+.meal-type{margin-top:5px;padding-top:4px}
+ .mobile-month-view .meal-group{margin-top:4px}
+ .mobile-month-view .meal-group+.meal-group{margin-top:4px;padding-top:3px}
+ .mobile-month-view .person{margin-bottom:3px;font-size:8px}
+ .mobile-month-view .category,.mobile-month-view .meal small{display:none!important}
+ .mobile-month-view .meal+.meal{margin-top:4px}
+ .mobile-month-view .dish-name{display:-webkit-box;min-width:0;margin:2px 0;padding:0;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:3;font-size:9px;line-height:1.2}
+ .mobile-month-view .suggestion{padding-top:2px}
+ .mobile-month-view .suggestion strong{margin:3px 0;font-size:9px;line-height:1.2}
+ .mobile-month-view .suggestion p,.mobile-month-view .suggestion-actions{display:none}
+ .mobile-month-view .manual-meal{margin-top:3px;font-size:9px}
+ .mobile-month-view .manual-meal p,.mobile-month-view .manual-symbol{display:none}
+ .mobile-month-view article.day>p{margin:2px 0;font-size:8px;line-height:1.2}
+}
