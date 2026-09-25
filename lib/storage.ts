@@ -12,6 +12,7 @@ function normalizeMeals(day:Day,legacyType:MealType,settings:Settings){
 function normalizeState(state:State){
  state.settings=normalizeSettings(state.settings);
  state.added=state.added?.map(d=>normalizeDish(d));
+ state.deletedDishIds=[...new Set((state.deletedDishIds??[]).filter(id=>Number.isSafeInteger(id)&&id>0))];
  state.overrides=Object.fromEntries(Object.entries(state.overrides).map(([id,d])=>[id,normalizeDish(d)])) as Record<string,Dish>;
  for(const menu of Object.values(state.menus)){const legacy=(menu.settings as Settings&{mealType?:MealType}).mealType??'Comida';menu.settings=normalizeSettings(menu.settings);for(const day of menu.days)normalizeMeals(day,legacy,menu.settings)}
  return state;

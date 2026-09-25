@@ -14,7 +14,7 @@ export type Day = {date:string;meals:Record<Person,Dish[]>;mealsByType?:Partial<
 export type Menu = {month:string;status:'draft'|'confirmed';days:Day[];settings:Settings;updatedAt:string;warnings:string[];recipeSlots?:string[]};
 export type ShoppingItem={id:string;name:string;quantity:number|null;unit:string;checked:boolean;uses:string[]};
 export type ShoppingStore={items:ShoppingItem[];included:Record<string,number>};
-export type State = {settings:Settings;menus:Record<string,Menu>;overrides:Record<string,Dish>;added?:Dish[];shopping?:ShoppingStore;discovery?:{recipes:import('./recipes').Recipe[];updatedAt:string}};
+export type State = {settings:Settings;menus:Record<string,Menu>;overrides:Record<string,Dish>;added?:Dish[];deletedDishIds?:number[];shopping?:ShoppingStore;discovery?:{recipes:import('./recipes').Recipe[];updatedAt:string}};
 export const mealTypes:MealType[]=['Desayuno','Comida','Merienda','Cena'];
 export const defaultCategoryRanges=Object.fromEntries(dishCategories.map(category=>[category,{min:0,max:7}])) as Record<string,CategoryRange>;
 export const defaults:Settings={diners:[{id:'Dani',name:'Dani'},{id:'Marta',name:'Marta'}],days:[1,2,3,4,5],summerMonths:[6,7,8,9],repeatDays:21,mealTypes:['Comida'],newRecipeSuggestions:2,categoryRanges:defaultCategoryRanges};
