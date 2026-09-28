@@ -116,6 +116,34 @@ Replace the filename with the pending migration and `DB` with your D1 binding na
 - `npm run start`: preview the built Worker locally with D1/R2 support
 - `npm run db:generate`: generate Drizzle migrations after schema changes
 
+## Importar recetas de Monsieur Cuisine
+
+Monsieur Cuisine es una fuente de importación offline. El comando consulta su API pública en español, normaliza las recetas al modelo de A la Mesa y las copia al catálogo propio `lib/catalog.json`. La aplicación no consulta Monsieur Cuisine mientras un usuario navega o prepara un menú y, por tanto, este proceso no depende de Cloudflare ni del hosting usado en runtime.
+
+Antes de escribir, puede probar el mapeo de unas pocas recetas:
+
+```sh
+npm run import:monsieur-cuisine -- --limit 3 --dry-run
+```
+
+Para inspeccionar hasta cinco recetas e importar las nuevas encontradas al catálogo:
+
+```sh
+npm run import:monsieur-cuisine -- --limit 5
+```
+
+Para recorrer todas las páginas oficiales:
+
+```sh
+npm run import:monsieur-cuisine
+```
+
+La importación es incremental: identifica cada receta mediante `monsieur-cuisine-{idOriginal}`, omite las que ya tengan ese `recipeId` y no sobrescribe recetas existentes. También admite `--page <n>` para comenzar en una página concreta y `--catalog <ruta>` para usar otro catálogo compatible. La URL, el idioma, el timeout y los reintentos se centralizan y pueden configurarse mediante `MONSIEUR_CUISINE_BASE_URL`, `MONSIEUR_CUISINE_LANGUAGE`, `MONSIEUR_CUISINE_TIMEOUT_MS` y `MONSIEUR_CUISINE_MAX_RETRIES`.
+
+Las recetas quedan con `review: false` y `recipe.reviewed: false`. El cliente reproduce las cabeceras públicas de la web oficial para recibir los nombres localizados de los ingredientes, además de cantidades, unidades y `systemIngredientId`. Los pasos conservan tiempo, temperatura, velocidad, sentido inverso, turbo, amasado y demás ajustes del robot; los bloques técnicos `Mode` se convierten en instrucciones legibles.
+
+En **Descubrir recetas**, el selector **Fuentes al renovar** permite elegir Recetas de la Abuela, Monsieur Cuisine o ambas. La renovación guarda 50 recetas en el estado propio de A la Mesa; cuando se seleccionan ambas, obtiene 25 de cada fuente y muestra el reparto junto a la fecha de renovación. Navegar por las tarjetas guardadas no consulta ninguna API externa.
+
 When using the Sites plugin, follow its skill instructions for installation, builds, and publishing. These npm commands remain available for standalone use.
 
 The portable build runs Vinext directly without a host `timeout` command. The managed-linux build uses `scripts/build-verified.sh` and its existing `SITES_BUILD_TIMEOUT` setting.

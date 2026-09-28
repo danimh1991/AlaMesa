@@ -1,0 +1,67 @@
+{
+  "id": 453695,
+  "language": "es-ES",
+  "name": "Cocer huevos",
+  "source": "official",
+  "url": "https://www.monsieur-cuisine.com/es/recipe/cocer-huevos-2",
+  "complexity": "fácil",
+  "complexityLevel": 1,
+  "preparationDuration": 14,
+  "duration": 14,
+  "deviceTypes": ["MC2.0", "MC3.0"],
+  "categories": [
+    { "id": 249, "name": "Guarniciones" },
+    { "id": 257, "name": "Tentempiés" },
+    { "id": 582, "name": "Vegetariano" }
+  ],
+  "tags": [],
+  "defaultServingSizeId": 1,
+  "servingSizes": [
+    {
+      "id": 1,
+      "amount": 4,
+      "servingUnit": "trozos",
+      "instruction": "Llene el vaso con 500 ml de agua fría.\n\nPonga los huevos en la cesta para cocer.\n\nSUGERENCIA:\nPara preparar una cantidad mayor de huevos duros, reparta los huevos entre la cesta para cocer y el accesorio hondo para cocer al vapor.",
+      "ingredientGroups": [{ "order": 0, "id": 29737, "name": "PARA 4 HUEVOS" }],
+      "ingredients": [
+        {
+          "order": 0,
+          "amount": "4",
+          "unit": "unidades",
+          "systemIngredientId": 20562,
+          "ingredientGroupId": 29737,
+          "name": "huevos medianos",
+          "ingredientCategory": null
+        }
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "order": 0,
+          "name": "Ponga 4 huevos medianos en la cesta para cocer e introdúzcala en el vaso.",
+          "description": "Ponga 4 huevos medianos en la cesta para cocer e introdúzcala en el vaso.",
+          "deviceSetting": null,
+          "ingredients": [],
+          "modules": null
+        },
+        {
+          "step": 2,
+          "order": 1,
+          "name": "Mode",
+          "description": null,
+          "deviceSetting": {
+            "reverse": false,
+            "turbo": false,
+            "size": null,
+            "texture": null,
+            "cleaningMode": null,
+            "mode": "customized",
+            "settings": [{ "order": 0, "speed": 1, "temperature": 120, "time": 540, "weight": null }]
+          },
+          "ingredients": [],
+          "modules": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,9 @@
 import {normalize,type Dish} from './menu';
 import type {Recipe} from './recipes';
 import recipeSearchIndex from './recipe-search-index';
+import {refreshMonsieurCuisine} from './monsieur-cuisine-provider';
+
+export type RecipeSource='abuela'|'monsieur-cuisine';
 
 export const PROVIDER_URL='https://huggingface.co/datasets/somosnlp/RecetasDeLaAbuela';
 type Row={row_idx:number;row:Record<string,unknown>;truncated_cells?:unknown[]};
@@ -48,20 +51,30 @@ export async function lookupRecipe(id:string,rowIndex:number){
  const page=await providerPage('rows',{offset:String(rowIndex),length:'1'});
  const recipe=page.rows[0]&&fromProvider(page.rows[0]);if(!recipe||recipe.id!==id)throw new Error('La receta ha cambiado en el origen. Búscala de nuevo antes de confirmarla.');return recipe;
 }
-export async function refreshRecipes(previous:Recipe[],catalog:Dish[]):Promise<Recipe[]>{
+async function refreshAbuela(previous:Recipe[],catalog:Dish[],target=50):Promise<Recipe[]>{
  const meta=await providerPage('rows',{offset:'0',length:'1'}),total=meta.num_rows_total;
- if(total<50)throw new Error('El catálogo no tiene suficientes recetas disponibles. Conservamos la selección anterior.');
+ if(total<target)throw new Error('El catálogo no tiene suficientes recetas disponibles. Conservamos la selección anterior.');
  const excludedIds=new Set([...previous.map(r=>r.id),...catalog.flatMap(d=>d.recipeId?[d.recipeId]:[])]);
  const names=new Set([...catalog.map(d=>normalize(d.name)),...previous.map(d=>normalize(d.name))]);
  const recipes:Recipe[]=[];const visited=new Set<number>();
- for(let round=0;round<3&&recipes.length<50;round++){
+ for(let round=0;round<3&&recipes.length<target;round++){
   const offsets=Array.from({length:4},()=>{let offset;do{offset=Math.floor(Math.random()*Math.max(1,total-100))}while(visited.has(offset));visited.add(offset);return offset});
   const pages=await Promise.all(offsets.map(offset=>providerPage('rows',{offset:String(offset),length:'100'})));
   const candidates=pages.flatMap(p=>p.rows).map(fromProvider).filter((r):r is Recipe=>r!==null);
   for(let i=candidates.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[candidates[i],candidates[j]]=[candidates[j],candidates[i]]}
-  for(const recipe of candidates){if(excludedIds.has(recipe.id)||names.has(normalize(recipe.name)))continue;recipes.push(recipe);excludedIds.add(recipe.id);names.add(normalize(recipe.name));if(recipes.length===50)break;}
+  for(const recipe of candidates){if(excludedIds.has(recipe.id)||names.has(normalize(recipe.name)))continue;recipes.push(recipe);excludedIds.add(recipe.id);names.add(normalize(recipe.name));if(recipes.length===target)break;}
  }
- if(recipes.length!==50)throw new Error('No se han encontrado 50 ideas diferentes. Conservamos la selección anterior; inténtalo de nuevo.');
+ if(recipes.length!==target)throw new Error(`No se han encontrado ${target} ideas diferentes en Recetas de la Abuela. Conservamos la selección anterior; inténtalo de nuevo.`);
+ return recipes;
+}
+export async function refreshRecipes(previous:Recipe[],catalog:Dish[],sources:RecipeSource[]=['abuela']):Promise<Recipe[]>{
+ const selected=[...new Set(sources)];if(!selected.length||selected.some(source=>!['abuela','monsieur-cuisine'].includes(source)))throw new Error('Selecciona al menos una fuente de recetas.');
+ const recipes:Recipe[]=[];
+ for(const [index,source] of selected.entries()){
+ const target=Math.floor(50/selected.length)+(index<50%selected.length?1:0),excluded=[...previous,...recipes];
+  recipes.push(...(source==='abuela'?await refreshAbuela(excluded,catalog,target):await refreshMonsieurCuisine(excluded,catalog,target)));
+ }
+ for(let index=recipes.length-1;index>0;index--){const other=Math.floor(Math.random()*(index+1));[recipes[index],recipes[other]]=[recipes[other],recipes[index]]}
  return recipes;
 }
 const searchCache=new Map<string,{until:number;result:{recipes:Recipe[];total:number;nextOffset:number|null}}>();

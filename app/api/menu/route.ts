@@ -21,7 +21,7 @@ const catalogFor=(state:State)=>{const deleted=new Set(state.deletedDishIds??[])
 const product=z.object({name:z.string().trim().min(1).max(240),quantity:z.number().positive().max(1000000).nullable(),unit:z.string().trim().max(40)});
 const availableFood=z.object({id:z.string().uuid().optional(),name:z.string().trim().min(1).max(180),category:z.string().trim().min(1).max(40),mealType:z.enum(['Desayuno','Comida','Merienda','Cena']),portions:z.number().int().min(1).max(999),diners:z.array(z.string().trim().min(1).max(80)).min(1).max(12).refine(v=>new Set(v).size===v.length)});
 const input=z.discriminatedUnion('action',[
- z.object({action:z.literal('refresh-recipes'),revision:z.number().int().min(0)}),
+ z.object({action:z.literal('refresh-recipes'),sources:z.array(z.enum(['abuela','monsieur-cuisine'])).min(1).max(2).default(['abuela']),revision:z.number().int().min(0)}),
  z.object({action:z.literal('person-day'),month,date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),person:z.string().min(1).max(80),mealType:z.enum(['Desayuno','Comida','Merienda','Cena']).default('Comida'),mode:z.enum(['out','tupper','custom','dish','generate','suggest']),note:z.string().trim().max(240).optional(),dishId:z.number().int().positive().optional(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('day-dish'),month,date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),mealType:z.enum(['Desayuno','Comida','Merienda','Cena']),dishId:z.number().int().positive(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('shopping-check-all'),revision:z.number().int().min(0)}),
@@ -34,7 +34,7 @@ const input=z.discriminatedUnion('action',[
  z.object({action:z.literal('recipe'),id:z.number().int().positive(),recipe:recipeSchema,revision:z.number().int().min(0)}),
  z.object({action:z.literal('preview-import'),document:z.unknown(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('import-catalog'),document:z.unknown(),revision:z.number().int().min(0)}),
- z.object({action:z.literal('accept-recipe'),recipeId:z.string().regex(/^abuela-\d+$/),rowIndex:z.number().int().min(0).max(1000000).optional(),schedule:z.boolean().optional(),replaceLocked:z.boolean().optional(),targetPerson:z.string().max(80).optional(),dish:dish.omit({id:true,recipeId:true}),month:month.optional(),date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/).optional(),revision:z.number().int().min(0)}),
+ z.object({action:z.literal('accept-recipe'),recipeId:z.string().regex(/^(?:abuela|monsieur-cuisine)-\d+$/),rowIndex:z.number().int().min(0).max(1000000).optional(),schedule:z.boolean().optional(),replaceLocked:z.boolean().optional(),targetPerson:z.string().max(80).optional(),dish:dish.omit({id:true,recipeId:true}),month:month.optional(),date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/).optional(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('reject-recipe'),month,date:z.string(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('generate'),month,revision:z.number().int().min(0)}),
  z.object({action:z.enum(['reroll','lock','suggest-recipe']),month,date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),revision:z.number().int().min(0)}),
@@ -56,7 +56,7 @@ export async function POST(request:Request){
  const catalog=catalogFor(state);
  if(['dish','create-dish','accept-recipe'].includes(body.action)&&'dish' in body&&!Object.keys(state.settings.categoryRanges).some(category=>normalize(category)===normalize(body.dish.category)))throw new Error('El tipo principal del plato no está en Preferencias. Añádelo antes de guardar el plato.');
  if(['dish','create-dish','accept-recipe'].includes(body.action)&&'dish' in body){const active=peopleFor(body.action==='accept-recipe'&&body.month?state.menus[body.month]?.settings??state.settings:state.settings);if(body.dish.diners.some(p=>!active.includes(p))){const existing='id' in body.dish?catalog.find(d=>d.id===(body.dish as Partial<Dish>).id):undefined;if(!existing||body.dish.diners.some(p=>!existing.diners.includes(p)))throw new Error('Selecciona comensales de Preferencias.');}}
- if(body.action==='refresh-recipes'){state.discovery={recipes:await refreshRecipes(poolFor(state),catalog),updatedAt:new Date().toISOString()}}
+ if(body.action==='refresh-recipes'){state.discovery={recipes:await refreshRecipes(poolFor(state),catalog,body.sources),updatedAt:new Date().toISOString(),sources:body.sources}}
  else if(body.action==='shopping-check-all'){for(const item of basket(state).items)item.checked=true}
  else if(body.action==='shopping-clear-checked'){const store=basket(state);store.items=store.items.filter(i=>!i.checked)}
  else if(body.action==='shopping-add'){addProduct(state,body.product)}
