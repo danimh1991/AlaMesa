@@ -6,15 +6,16 @@ export type DishCategory=typeof dishCategories[number];
 export type CategoryRange={min:number;max:number};
 export type Ingredient={name:string;quantity:number|null;unit:string;notes?:string};
 export type RecipeDetails={servings:number|null;ingredients:Ingredient[];steps:string[];sourceUrl:string;notes:string;reviewed:boolean;originalIngredients?:string};
-export type Dish = {id:number;name:string;category:string;season:string;complexity:number;diners:string[];mealType:MealType;type:string;review:boolean;enabled?:boolean;family?:string;recipeId?:string;recipe?:RecipeDetails};
+export type Dish = {id:number;name:string;category:string;season:string;complexity:number;diners:string[];mealType:MealType;type:string;review:boolean;enabled?:boolean;family?:string;recipeId?:string;recipe?:RecipeDetails;availableFoodId?:string};
+export type AvailableFood={id:string;name:string;category:string;mealType:MealType;portions:number;diners:string[]};
 export type Settings = {diners?:Diner[];days:number[];summerMonths:number[];repeatDays:number;mealTypes:MealType[];newRecipeSuggestions:number;categoryRanges:Record<string,CategoryRange>};
 export type ManualMeal = {kind:'custom';entries?:Record<string,string>;Dani?:string;Marta?:string}|{kind:'out'|'empty';note:string};
 export type PersonalMeal={kind:'out'|'tupper'|'custom'|'empty';note:string}|{kind:'suggestion';recipe:import('./recipes').Recipe};
 export type Day = {date:string;meals:Record<Person,Dish[]>;mealsByType?:Partial<Record<MealType,Record<Person,Dish[]>>>;locked:boolean;manual?:ManualMeal;suggestion?:string;suggestedRecipe?:import('./recipes').Recipe;personal?:Record<string,PersonalMeal>;personalByType?:Partial<Record<MealType,Record<string,PersonalMeal>>>};
-export type Menu = {month:string;status:'draft'|'confirmed';days:Day[];settings:Settings;updatedAt:string;warnings:string[];recipeSlots?:string[]};
+export type Menu = {month:string;status:'draft'|'confirmed';days:Day[];settings:Settings;updatedAt:string;warnings:string[];recipeSlots?:string[];availableFoodConsumed?:boolean};
 export type ShoppingItem={id:string;name:string;quantity:number|null;unit:string;checked:boolean;uses:string[]};
 export type ShoppingStore={items:ShoppingItem[];included:Record<string,number>};
-export type State = {settings:Settings;menus:Record<string,Menu>;overrides:Record<string,Dish>;added?:Dish[];deletedDishIds?:number[];shopping?:ShoppingStore;discovery?:{recipes:import('./recipes').Recipe[];updatedAt:string}};
+export type State = {settings:Settings;menus:Record<string,Menu>;overrides:Record<string,Dish>;added?:Dish[];deletedDishIds?:number[];availableFood?:AvailableFood[];shopping?:ShoppingStore;discovery?:{recipes:import('./recipes').Recipe[];updatedAt:string}};
 export const mealTypes:MealType[]=['Desayuno','Comida','Merienda','Cena'];
 export const defaultCategoryRanges=Object.fromEntries(dishCategories.map(category=>[category,{min:0,max:7}])) as Record<string,CategoryRange>;
 export const defaults:Settings={diners:[{id:'Dani',name:'Dani'},{id:'Marta',name:'Marta'}],days:[1,2,3,4,5],summerMonths:[6,7,8,9],repeatDays:21,mealTypes:['Comida'],newRecipeSuggestions:2,categoryRanges:defaultCategoryRanges};
@@ -102,5 +103,18 @@ export function generateMenu(month:string,catalog:Dish[],settings:Settings,menus
  const days:Day[]=[];const locked=previous?.days.filter(d=>d.locked&&monthDates(month,settings.days).includes(d.date))??[];
  for(const date of monthDates(month,settings.days)){const saved=locked.find(d=>d.date===date);if(saved){if(peopleFor(previous!.settings).join()!==peopleFor(settings).join())throw new Error('Han cambiado los comensales. Desbloquea los días antes de regenerar este mes.');const keep=structuredClone(saved);if(!keep.manual)for(const type of selectedMealTypes(settings)){const handled=(type==='Comida'&&!!keep.suggestion)||Object.keys(personalFor(keep,type)).length>0;if(!handled&&peopleFor(settings).some(p=>!(mealsFor(keep,type)[p]??[]).length)){const generated=generateDay(date,catalog,{...settings,mealTypes:[type]},[...history,...locked.filter(d=>d.date!==date),...days],keep,Math.random,true);setMealsFor(keep,type,mealsFor(generated,type));}}validateDay(keep,settings);days.push(keep)}else days.push(generateDay(date,catalog,settings,[...history,...locked,...days.filter(d=>!d.locked)],previous?.days.find(d=>d.date===date),Math.random,true))}
  const menu:Menu={month,status:'draft',days,settings:structuredClone(settings),updatedAt:new Date().toISOString(),warnings:[]};menu.warnings=menuWarnings(menu,history);return menu;
+}
+export function applyAvailableFood(menu:Menu,available:AvailableFood[]){
+ const used=new Map<string,number>();for(const day of menu.days)for(const type of selectedMealTypes(menu.settings))for(const dishes of Object.values(mealsFor(day,type)))for(const dish of dishes)if(dish.availableFoodId)used.set(dish.availableFoodId,(used.get(dish.availableFoodId)??0)+1);
+ for(const [index,item] of available.entries()){
+  let remaining=Math.max(0,item.portions-(used.get(item.id)??0));if(!remaining)continue;
+  const dish:Dish={id:-(index+1),name:item.name,category:item.category,season:'Ambos',complexity:1,diners:item.diners,mealType:item.mealType,type:'Único',review:false,enabled:true,availableFoodId:item.id};
+  for(const day of menu.days){if(!remaining||!selectedMealTypes(menu.settings).includes(item.mealType)||day.manual||(item.mealType==='Comida'&&day.suggestion))continue;const personal=personalFor(day,item.mealType),meals=mealsFor(day,item.mealType);for(const person of peopleFor(menu.settings)){if(!remaining)break;if(!item.diners.includes(person)||personal[person]||meals[person]?.some(d=>d.availableFoodId))continue;meals[person]=[{...dish}];remaining--;}setMealsFor(day,item.mealType,meals);}
+ }
+ return menu;
+}
+export function consumeAvailableFood(state:State,menu:Menu){
+ if(menu.availableFoodConsumed)return;const used=new Map<string,number>();for(const day of menu.days)for(const type of selectedMealTypes(menu.settings))for(const dishes of Object.values(mealsFor(day,type)))for(const dish of dishes)if(dish.availableFoodId)used.set(dish.availableFoodId,(used.get(dish.availableFoodId)??0)+1);
+ state.availableFood=(state.availableFood??[]).map(item=>({...item,portions:Math.max(0,item.portions-(used.get(item.id)??0))})).filter(item=>item.portions>0);menu.availableFoodConsumed=true;
 }
 export function validateDay(day:Day,s:Settings){if(day.manual){if(day.manual.kind==='custom'&&peopleFor(s).some(p=>!manualEntries(day.manual as Extract<ManualMeal,{kind:'custom'}>)[p]?.trim()))throw new Error('Completa la comida puntual de todos los comensales.');return;}for(const mealType of selectedMealTypes(s))for(const p of peopleFor(s)){if(mealType==='Comida'&&day.suggestion)continue;const personal=personalFor(day,mealType)[p];if(personal){if(personal.kind==='suggestion')continue;if(personal.kind==='custom'&&!personal.note.trim())throw new Error('Completa la comida puntual.');continue;}const ds=mealsFor(day,mealType)[p]??[];if(!ds.length||ds.some(d=>!d||!allowed(d,p,day.date,s,mealType)))throw new Error(`El ${mealType.toLowerCase()} de ${p} del ${day.date} no cumple las preferencias.`);if(!(ds.length===1&&ds[0].type==='Único')&&!(ds.length===2&&ds[0].type==='Entrante'&&ds[1].type==='Principal'))throw new Error(`Falta completar el ${mealType.toLowerCase()} de ${p}.`)} }

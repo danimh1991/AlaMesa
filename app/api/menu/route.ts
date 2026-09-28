@@ -6,7 +6,7 @@ import {planImport,applyImport} from '../../../lib/catalog-transfer';
 import {addSuggestions,acceptRecipe,suggestForDay,poolFor,resolveRecipe,editPerson} from '../../../lib/recipes';
 import seed from '../../../lib/catalog.json';
 import {readState,saveState} from '../../../lib/storage';
-import {generateMenu,generateDay,menuWarnings,validateDay,monthDates,normalize,normalizeDish,peopleFor,emptyMeals,selectedMealTypes,mealsFor,setMealsFor,personalFor,setPersonalFor,validateDay as validateManual,type Dish,type State} from '../../../lib/menu';
+import {generateMenu,generateDay,applyAvailableFood,consumeAvailableFood,menuWarnings,validateDay,monthDates,normalize,normalizeDish,peopleFor,emptyMeals,selectedMealTypes,mealsFor,setMealsFor,personalFor,setPersonalFor,validateDay as validateManual,type Dish,type State} from '../../../lib/menu';
 
 const month=z.string().regex(/^20\d{2}-(0[1-9]|1[0-2])$/);
 const diners=z.array(z.object({id:z.string().regex(/^[a-zA-Z0-9_-]{1,80}$/).refine(v=>!['Ambos','__proto__','constructor','prototype'].includes(v)),name:z.string().trim().min(1).max(40)})).min(1).max(12).refine(ds=>new Set(ds.map(d=>d.id)).size===ds.length&&new Set(ds.map(d=>normalize(d.name))).size===ds.length,'Los nombres no pueden repetirse.');
@@ -19,6 +19,7 @@ const manual=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('empty'),note:z.string().trim().max(240).default('')})]);
 const catalogFor=(state:State)=>{const deleted=new Set(state.deletedDishIds??[]);return [...seed,...(state.added??[])].filter(d=>!deleted.has(d.id)).map(d=>normalizeDish(state.overrides[d.id]??d)) as Dish[]};
 const product=z.object({name:z.string().trim().min(1).max(240),quantity:z.number().positive().max(1000000).nullable(),unit:z.string().trim().max(40)});
+const availableFood=z.object({id:z.string().uuid().optional(),name:z.string().trim().min(1).max(180),category:z.string().trim().min(1).max(40),mealType:z.enum(['Desayuno','Comida','Merienda','Cena']),portions:z.number().int().min(1).max(999),diners:z.array(z.string().trim().min(1).max(80)).min(1).max(12).refine(v=>new Set(v).size===v.length)});
 const input=z.discriminatedUnion('action',[
  z.object({action:z.literal('refresh-recipes'),revision:z.number().int().min(0)}),
  z.object({action:z.literal('person-day'),month,date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),person:z.string().min(1).max(80),mealType:z.enum(['Desayuno','Comida','Merienda','Cena']).default('Comida'),mode:z.enum(['out','tupper','custom','dish','generate','suggest']),note:z.string().trim().max(240).optional(),dishId:z.number().int().positive().optional(),revision:z.number().int().min(0)}),
@@ -42,6 +43,8 @@ const input=z.discriminatedUnion('action',[
  z.object({action:z.literal('dish'),dish,revision:z.number().int().min(0)}),
  z.object({action:z.literal('create-dish'),dish:dish.omit({id:true}),revision:z.number().int().min(0)}),
  z.object({action:z.literal('delete-dish'),id:z.number().int().positive(),revision:z.number().int().min(0)}),
+ z.object({action:z.literal('save-available-food'),food:availableFood,revision:z.number().int().min(0)}),
+ z.object({action:z.literal('remove-available-food'),id:z.string().uuid(),revision:z.number().int().min(0)}),
  z.object({action:z.literal('day-manual'),month,date:z.string().regex(/^20\d{2}-\d{2}-\d{2}$/),manual,revision:z.number().int().min(0)})]);
 const json=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 export async function GET(){try{const data=await readState();return json({...data,catalog:catalogFor(data.state)})}catch(e){console.error('Menu read',e);return json({error:'No se han podido cargar los menús. Inténtalo de nuevo.'},503)}}
@@ -66,11 +69,13 @@ export async function POST(request:Request){
  else if(body.action==='dish'){if(!catalog.some(d=>d.id===body.dish.id))return json({error:'Plato desconocido.'},404);state.overrides[body.dish.id]={...body.dish,recipeId:catalog.find(d=>d.id===body.dish.id)?.recipeId}}
  else if(body.action==='create-dish'){if(catalog.some(d=>normalize(d.name)===normalize(body.dish.name)))return json({error:'Ya hay un plato con ese nombre. Puedes editarlo en el catálogo.'},409);const id=Math.max(...catalog.map(d=>d.id),...(state.deletedDishIds??[]),0)+1;state.added=[...(state.added??[]),{...body.dish,id,recipeId:undefined}]}
  else if(body.action==='delete-dish'){if(!catalog.some(d=>d.id===body.id))return json({error:'Plato desconocido.'},404);state.added=(state.added??[]).filter(d=>d.id!==body.id);delete state.overrides[body.id];state.deletedDishIds=[...new Set([...(state.deletedDishIds??[]),body.id])];}
- else {const menu=state.menus[body.month];if(body.action==='generate'){if(menu?.status==='confirmed')return json({error:'Abre el menú para editarlo antes de regenerarlo.'},409);state.menus[body.month]=addSuggestions(generateMenu(body.month,catalog,state.settings,state.menus,menu),catalog,state.menus,menu,poolFor(state))}
+ else if(body.action==='save-available-food'){if(!Object.keys(state.settings.categoryRanges).some(category=>normalize(category)===normalize(body.food.category)))throw new Error('El tipo principal debe existir en Preferencias.');if(body.food.diners.some(person=>!peopleFor(state.settings).includes(person)))throw new Error('Selecciona comensales de Preferencias.');const food={...body.food,id:body.food.id??crypto.randomUUID()},index=(state.availableFood??[]).findIndex(item=>item.id===food.id);state.availableFood=index<0?[...(state.availableFood??[]),food]:(state.availableFood??[]).map(item=>item.id===food.id?food:item);}
+ else if(body.action==='remove-available-food'){state.availableFood=(state.availableFood??[]).filter(item=>item.id!==body.id);}
+ else {const menu=state.menus[body.month];if(body.action==='generate'){if(menu?.status==='confirmed')return json({error:'Abre el menú para editarlo antes de regenerarlo.'},409);state.menus[body.month]=addSuggestions(applyAvailableFood(generateMenu(body.month,catalog,state.settings,state.menus,menu),state.availableFood??[]),catalog,state.menus,menu,poolFor(state))}
  else {if(!menu)return json({error:'Este mes todavía no tiene menú.'},404);
  if(body.action==='edit')menu.status='draft';
  else {if(menu.status==='confirmed')return json({error:'El menú está confirmado. Ábrelo para editarlo.'},409);
- if(body.action==='confirm'){if(menu.days.some(d=>d.suggestion||selectedMealTypes(menu.settings).some(type=>Object.values(personalFor(d,type)).some(p=>p.kind==='suggestion'))))throw new Error('Acepta o sustituye las recetas por probar antes de confirmar el mes.');if(menu.days.length!==monthDates(menu.month,menu.settings.days).length)throw new Error('El mes está incompleto.');for(const day of menu.days){const checked=structuredClone(day);for(const type of selectedMealTypes(menu.settings))setMealsFor(checked,type,Object.fromEntries(peopleFor(menu.settings).map(p=>[p,(mealsFor(day,type)[p]??[]).map(d=>catalog.find(x=>x.id===d.id)!)])));validateDay(checked,menu.settings)}menu.status='confirmed';includeMenu(state,menu,catalog)}
+ if(body.action==='confirm'){if(menu.days.some(d=>d.suggestion||selectedMealTypes(menu.settings).some(type=>Object.values(personalFor(d,type)).some(p=>p.kind==='suggestion'))))throw new Error('Acepta o sustituye las recetas por probar antes de confirmar el mes.');if(menu.days.length!==monthDates(menu.month,menu.settings.days).length)throw new Error('El mes está incompleto.');for(const day of menu.days){const checked=structuredClone(day);for(const type of selectedMealTypes(menu.settings))setMealsFor(checked,type,Object.fromEntries(peopleFor(menu.settings).map(p=>[p,(mealsFor(day,type)[p]??[]).map(d=>catalog.find(x=>x.id===d.id)??d)])));validateDay(checked,menu.settings)}menu.status='confirmed';consumeAvailableFood(state,menu);includeMenu(state,menu,catalog)}
  else if(body.action==='suggest-recipe'){suggestForDay(menu,catalog,body.date,poolFor(state))}
  else if(body.action==='person-day'){editPerson(menu,catalog,state.menus,body,poolFor(state))}
  else if(body.action==='day-dish'){for(const person of peopleFor(menu.settings))editPerson(menu,catalog,state.menus,{date:body.date,person,mealType:body.mealType,mode:'dish',dishId:body.dishId},poolFor(state))}
