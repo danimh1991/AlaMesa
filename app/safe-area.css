@@ -1,0 +1,102 @@
+/* Mobile browser and installed-PWA viewport corrections. Loaded last on purpose. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
+.shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.sidebar {
+  height: 100vh;
+  height: 100dvh;
+}
+
+dialog {
+  inset-block-start: env(safe-area-inset-top, 0px);
+  inset-block-end: env(safe-area-inset-bottom, 0px);
+  inset-inline-start: env(safe-area-inset-left, 0px);
+  inset-inline-end: env(safe-area-inset-right, 0px);
+  width: min(
+    570px,
+    calc(
+      100% - 30px - env(safe-area-inset-left, 0px) -
+        env(safe-area-inset-right, 0px)
+    )
+  );
+  max-height: 90vh;
+  max-height: calc(
+    100dvh - env(safe-area-inset-top, 0px) -
+      env(safe-area-inset-bottom, 0px) - 16px
+  );
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.recipe-dialog {
+  width: min(
+    860px,
+    calc(
+      100% - 32px - env(safe-area-inset-left, 0px) -
+        env(safe-area-inset-right, 0px)
+    )
+  );
+}
+
+.day-editor {
+  width: min(
+    720px,
+    calc(
+      100% - 30px - env(safe-area-inset-left, 0px) -
+        env(safe-area-inset-right, 0px)
+    )
+  );
+}
+
+.dialog-header button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    height: auto;
+    min-height: calc(64px + env(safe-area-inset-top, 0px));
+    padding-block: 20px;
+    padding-top: calc(20px + env(safe-area-inset-top, 0px));
+    padding-right: calc(17px + env(safe-area-inset-right, 0px));
+    padding-left: calc(17px + env(safe-area-inset-left, 0px));
+  }
+
+  .sidebar nav {
+    gap: 1px;
+  }
+
+  .sidebar nav button {
+    min-width: 44px;
+    min-height: 44px;
+    padding-block: 9px;
+    padding-inline: 4px;
+  }
+
+  main {
+    padding-block: 20px calc(60px + env(safe-area-inset-bottom, 0px));
+    padding-right: calc(16px + env(safe-area-inset-right, 0px));
+    padding-left: calc(16px + env(safe-area-inset-left, 0px));
+  }
+
+  dialog {
+    padding-block: 20px;
+    padding-inline: 20px;
+  }
+
+  .monthbar button,
+  body:not(.mobile-month-view) .day-top button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
