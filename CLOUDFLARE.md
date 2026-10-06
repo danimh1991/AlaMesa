@@ -2,7 +2,7 @@
 
 La aplicación permite consultar y modificar los datos sin autenticación. Si activaste Cloudflare Access, desactívalo para este Worker en el panel; el código no puede saltarse esa protección externa. Las variables de Access ya no son necesarias para usar los menús.
 
-Compila y vuelve a desplegar con `npm run build` y `npm run deploy:cloudflare`. En Sites, sus permisos de plataforma siguen aplicándose.
+Compila para este dominio con `APP_BASE_PATH=/alamesa` y el `D1_DATABASE_ID` remoto antes de ejecutar `npm run build`; después usa `npm run deploy:cloudflare`. En Sites, sus permisos de plataforma siguen aplicándose.
 
 Las instrucciones siguientes se conservan como referencia para una futura reactivación; antes habrá que restaurar las comprobaciones de sesión en las API.
 
@@ -40,7 +40,7 @@ npm run deploy:cloudflare
 
 En Workers Builds, usa `npm run build` como comando de compilación y `npm run deploy:cloudflare` como comando de despliegue. El comando publica en el Worker existente `alamesa` y conserva las variables del panel. Si renombras el Worker, cambia el argumento `--name`.
 
-Si D1 es nuevo, crea la tabla ejecutando el SQL de `drizzle/0000_household.sql` una sola vez en esa base. No ejecutes `0001_reset_planning.sql` en una base con menús: es un borrado histórico de planificación, no necesario para habilitar el acceso. La base de Cloudflare es independiente de la de Sites y de la local.
+Si D1 es nuevo, aplica `drizzle/0000_household.sql` y después `drizzle/0002_normalized_state.sql`. Para actualizar una instalación antigua, crea primero una exportación de D1 y aplica únicamente `0002_normalized_state.sql`; conserva `household` como copia de transición. No ejecutes `0001_reset_planning.sql` en una base con menús: es un borrado histórico de planificación. La base de Cloudflare es independiente de la de Sites y de la local.
 
 ## Comprobar
 
