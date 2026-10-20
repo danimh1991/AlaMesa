@@ -1,0 +1,43 @@
+{
+  "recipeId": "api-pollo-horno-manzana-cebolla",
+  "name": "Pollo al horno con manzana y cebolla",
+  "category": "Pollo",
+  "season": "Ambos",
+  "complexity": 3,
+  "diners": ["Dani", "Marta"],
+  "mealType": "Comida",
+  "type": "Único",
+  "review": false,
+  "enabled": true,
+  "recipe": {
+    "servings": 2,
+    "ingredients": [
+      {"name": "Traseros de pollo", "quantity": 2, "unit": "ud"},
+      {"name": "Manzanas Golden, Gala o Fuji", "quantity": 2, "unit": "ud"},
+      {"name": "Cebolla grande", "quantity": 1, "unit": "ud"},
+      {"name": "Dientes de ajo", "quantity": 2, "unit": "ud"},
+      {"name": "Vino blanco", "quantity": 100, "unit": "ml"},
+      {"name": "Caldo de pollo o agua", "quantity": 100, "unit": "ml"},
+      {"name": "Aceite de oliva", "quantity": null, "unit": ""},
+      {"name": "Sal", "quantity": null, "unit": ""},
+      {"name": "Pimienta", "quantity": null, "unit": ""},
+      {"name": "Tomillo", "quantity": 1, "unit": "cucharadita"},
+      {"name": "Romero", "quantity": 0.5, "unit": "cucharadita", "notes": "Opcional"},
+      {"name": "Miel", "quantity": 1, "unit": "cucharadita", "notes": "Opcional"},
+      {"name": "Limón", "quantity": null, "unit": "", "notes": "Un chorrito"}
+    ],
+    "steps": [
+      "Precalentar el horno a 200 °C, calor arriba y abajo.",
+      "Cortar la cebolla en juliana gruesa y las manzanas en gajos grandes. Colocar ambas en una fuente junto con los ajos ligeramente aplastados.",
+      "Añadir aceite de oliva, sal, pimienta y tomillo. Mezclar.",
+      "Colocar los traseros de pollo encima, con la piel hacia arriba. Salpimentar, añadir aceite y el romero opcional.",
+      "Mezclar el vino blanco y el caldo y verterlos por un lateral de la fuente, evitando mojar directamente la piel.",
+      "Hornear 50-60 minutos a 200 °C. A mitad de cocción, regar opcionalmente con los jugos de la fuente.",
+      "Durante los últimos 10 minutos, pincelar opcionalmente con miel mezclada con limón y subir a 210-220 °C para dorar.",
+      "Comprobar que la parte más gruesa del pollo alcance al menos 74 °C en el centro, sin tocar el hueso con el termómetro. Dejar reposar 5 minutos antes de servir."
+    ],
+    "sourceUrl": "",
+    "notes": "Cortar las manzanas en gajos grandes y añadirlas desde el principio para que mantengan su forma. La cebolla quedará prácticamente confitada.",
+    "reviewed": false
+  }
+}

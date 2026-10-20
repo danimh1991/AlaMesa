@@ -1,0 +1,197 @@
+openapi: 3.1.0
+info:
+  title: A la Mesa Recipe API
+  version: 1.0.0
+  description: API REST para gestionar las recetas persistidas del catálogo de A la Mesa.
+servers:
+  - url: https://danieta.com/alamesa
+paths:
+  /api/recipes:
+    get:
+      operationId: listRecipes
+      summary: Lista las recetas del catálogo
+      parameters:
+        - {name: offset, in: query, schema: {type: integer, minimum: 0, default: 0}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 200, default: 100}}
+      responses:
+        '200':
+          description: Lista paginada
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RecipeList'}
+    post:
+      operationId: createRecipe
+      summary: Crea una receta
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RecipeCreate'}
+      responses:
+        '201':
+          description: Receta creada
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RecipeResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /api/recipes/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: integer, minimum: 1}
+    get:
+      operationId: getRecipe
+      summary: Consulta una receta
+      responses:
+        '200':
+          description: Receta encontrada
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RecipeResponse'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      operationId: updateRecipe
+      summary: Sustituye los datos editables de una receta
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/RecipeUpdate'}
+      responses:
+        '200':
+          description: Receta actualizada; id y recipeId se conservan
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RecipeResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+    delete:
+      operationId: deleteRecipe
+      summary: Elimina una receta del catálogo
+      security: [{bearerAuth: []}]
+      responses:
+        '204': {description: Receta eliminada}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque API token
+  responses:
+    BadRequest:
+      description: Petición no válida
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    Unauthorized:
+      description: Bearer token ausente o incorrecto
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    NotFound:
+      description: Receta inexistente
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+    Conflict:
+      description: Nombre o recipeId duplicado, o conflicto concurrente
+      content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}
+  schemas:
+    Ingredient:
+      type: object
+      additionalProperties: false
+      required: [name, quantity, unit]
+      properties:
+        name: {type: string, minLength: 1, maxLength: 240}
+        quantity: {type: [number, 'null'], exclusiveMinimum: 0, maximum: 1000000}
+        unit: {type: string, maxLength: 40}
+        notes: {type: string, maxLength: 300}
+    RecipeDetails:
+      type: object
+      additionalProperties: false
+      required: [servings, ingredients, steps, sourceUrl, notes, reviewed]
+      properties:
+        servings: {type: [number, 'null'], exclusiveMinimum: 0, maximum: 1000}
+        ingredients:
+          type: array
+          maxItems: 100
+          items: {$ref: '#/components/schemas/Ingredient'}
+        steps:
+          type: array
+          maxItems: 100
+          items: {type: string, minLength: 1, maxLength: 5000}
+        sourceUrl: {type: string, maxLength: 1000, description: Vacío o URL HTTP(S).}
+        notes: {type: string, maxLength: 5000}
+        reviewed: {type: boolean}
+        originalIngredients: {type: string, maxLength: 10000}
+    RecipeFields:
+      type: object
+      required: [name, category, season, complexity, diners, mealType, type, review, recipe]
+      properties:
+        name: {type: string, minLength: 1, maxLength: 180}
+        category: {type: string, minLength: 1, maxLength: 40, description: Debe existir en Preferencias.}
+        season: {type: string, enum: [Ambos, Verano, Invierno]}
+        complexity: {type: integer, minimum: 1, maximum: 5}
+        diners:
+          type: array
+          minItems: 1
+          maxItems: 12
+          uniqueItems: true
+          items: {type: string, minLength: 1, maxLength: 80}
+        mealType: {type: string, enum: [Desayuno, Comida, Merienda, Cena]}
+        type: {type: string, enum: [Único, Entrante, Principal, Guarnición]}
+        review: {type: boolean}
+        enabled: {type: boolean}
+        family: {type: string, maxLength: 80}
+        recipe: {$ref: '#/components/schemas/RecipeDetails'}
+    RecipeUpdate:
+      allOf:
+        - {$ref: '#/components/schemas/RecipeFields'}
+      unevaluatedProperties: false
+    RecipeCreate:
+      allOf:
+        - {$ref: '#/components/schemas/RecipeFields'}
+        - type: object
+          properties:
+            recipeId:
+              type: string
+              minLength: 1
+              maxLength: 100
+              pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*$'
+              description: Opcional; se genera api-UUID si se omite.
+      unevaluatedProperties: false
+    Recipe:
+      allOf:
+        - {$ref: '#/components/schemas/RecipeFields'}
+        - type: object
+          required: [id, recipeId]
+          properties:
+            id: {type: integer, minimum: 1}
+            recipeId: {type: string}
+      unevaluatedProperties: false
+    RecipeResponse:
+      type: object
+      required: [recipe]
+      properties:
+        recipe: {$ref: '#/components/schemas/Recipe'}
+    RecipeList:
+      type: object
+      required: [recipes, total, offset, limit]
+      properties:
+        recipes: {type: array, items: {$ref: '#/components/schemas/Recipe'}}
+        total: {type: integer, minimum: 0}
+        offset: {type: integer, minimum: 0}
+        limit: {type: integer, minimum: 1, maximum: 200}
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: {type: string}
+        details:
+          type: array
+          items:
+            type: object
+            properties: {path: {type: string}, message: {type: string}}

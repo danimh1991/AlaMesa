@@ -6,7 +6,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "test": "node scripts/test-recipe-workflows.mjs && node scripts/test-auth.mjs && node scripts/test-monsieur-cuisine.mjs",
+    "test": "node scripts/test-recipe-workflows.mjs && node scripts/test-auth.mjs && node scripts/test-recipe-api.mjs && node scripts/test-monsieur-cuisine.mjs",
     "typecheck": "tsc --noEmit --incremental false",
     "install:ci": "node scripts/install-ci.mjs",
     "dev": "node scripts/run-framework.mjs dev",

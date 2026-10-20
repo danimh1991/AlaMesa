@@ -3,9 +3,9 @@ import {z} from 'zod';
 import {dishSchema,recipeSchema} from '../../../lib/schemas';
 import {planImport,applyImport} from '../../../lib/catalog-transfer';
 import {addSuggestions,acceptRecipe,suggestForDay,poolFor,resolveRecipe,editPerson} from '../../../lib/recipes';
-import seed from '../../../lib/catalog.json';
+import {catalogFor} from '../../../lib/catalog';
 import {readState,saveState,type ReadParts,type SaveChanges} from '../../../lib/storage';
-import {generateMenu,generateDay,applyAvailableFood,consumeAvailableFood,menuWarnings,validateDay,monthDates,normalize,normalizeDish,peopleFor,emptyMeals,selectedMealTypes,mealsFor,setMealsFor,personalFor,setPersonalFor,validateDay as validateManual,type Dish,type State} from '../../../lib/menu';
+import {generateMenu,generateDay,applyAvailableFood,consumeAvailableFood,menuWarnings,validateDay,monthDates,normalize,peopleFor,emptyMeals,selectedMealTypes,mealsFor,setMealsFor,personalFor,setPersonalFor,validateDay as validateManual,type Dish,type State} from '../../../lib/menu';
 
 const month=z.string().regex(/^20\d{2}-(0[1-9]|1[0-2])$/);
 const diners=z.array(z.object({id:z.string().regex(/^[a-zA-Z0-9_-]{1,80}$/).refine(v=>!['Ambos','__proto__','constructor','prototype'].includes(v)),name:z.string().trim().min(1).max(40)})).min(1).max(12).refine(ds=>new Set(ds.map(d=>d.id)).size===ds.length&&new Set(ds.map(d=>normalize(d.name))).size===ds.length,'Los nombres no pueden repetirse.');
@@ -16,7 +16,6 @@ const manual=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('custom'),entries:z.record(z.string().trim().min(1).max(240)).optional(),Dani:z.string().trim().min(1).max(240).optional(),Marta:z.string().trim().min(1).max(240).optional()}),
  z.object({kind:z.literal('out'),note:z.string().trim().max(240).default('')}),
  z.object({kind:z.literal('empty'),note:z.string().trim().max(240).default('')})]);
-const catalogFor=(state:State)=>{const deleted=new Set(state.deletedDishIds??[]);return [...seed,...(state.added??[])].filter(d=>!deleted.has(d.id)).map(d=>normalizeDish(state.overrides[d.id]??d)) as Dish[]};
 const product=z.object({name:z.string().trim().min(1).max(240),quantity:z.number().positive().max(1000000).nullable(),unit:z.string().trim().max(40)});
 const availableFood=z.object({id:z.string().uuid().optional(),name:z.string().trim().min(1).max(180),category:z.string().trim().min(1).max(40),mealType:z.enum(['Desayuno','Comida','Merienda','Cena']),portions:z.number().int().min(1).max(999),diners:z.array(z.string().trim().min(1).max(80)).min(1).max(12).refine(v=>new Set(v).size===v.length)});
 const input=z.discriminatedUnion('action',[

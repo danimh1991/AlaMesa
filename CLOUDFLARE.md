@@ -1,6 +1,6 @@
 # Estado actual: acceso sin inicio de sesión
 
-La aplicación permite consultar y modificar los datos sin autenticación. Si activaste Cloudflare Access, desactívalo para este Worker en el panel; el código no puede saltarse esa protección externa. Las variables de Access ya no son necesarias para usar los menús.
+La interfaz de menús conserva su comportamiento actual. La API REST de recetas permite lectura pública, pero exige un Bearer token para `POST`, `PUT` y `DELETE`. Si activaste Cloudflare Access, recuerda que esa protección externa se aplica antes de que el Worker pueda validar el token.
 
 Compila para este dominio con `APP_BASE_PATH=/alamesa` y el `D1_DATABASE_ID` remoto antes de ejecutar `npm run build`; después usa `npm run deploy:cloudflare`. En Sites, sus permisos de plataforma siguen aplicándose.
 
@@ -40,7 +40,57 @@ npm run deploy:cloudflare
 
 En Workers Builds, usa `npm run build` como comando de compilación y `npm run deploy:cloudflare` como comando de despliegue. El comando publica en el Worker existente `alamesa` y conserva las variables del panel. Si renombras el Worker, cambia el argumento `--name`.
 
-Si D1 es nuevo, aplica `drizzle/0000_household.sql` y después `drizzle/0002_normalized_state.sql`. Para actualizar una instalación antigua, crea primero una exportación de D1 y aplica únicamente `0002_normalized_state.sql`; conserva `household` como copia de transición. No ejecutes `0001_reset_planning.sql` en una base con menús: es un borrado histórico de planificación. La base de Cloudflare es independiente de la de Sites y de la local.
+Si D1 es nuevo, aplica `drizzle/0000_household.sql` y después `drizzle/0002_normalized_state.sql`. Para actualizar una instalación antigua, crea primero una exportación de D1 y aplica únicamente `0002_normalized_state.sql`; conserva `household` como copia de transición. No ejecutes `0001_reset_planning.sql` en una base con menús: es un borrado histórico de planificación. La API de recetas reutiliza `dish_changes`, por lo que no requiere una migración adicional. La base de Cloudflare es independiente de la de Sites y de la local.
+
+## API REST de recetas
+
+La especificación OpenAPI 3.1 se publica en `/alamesa/openapi.yaml`. Las rutas son:
+
+- `GET /alamesa/api/recipes` y `GET /alamesa/api/recipes/:id` (públicas).
+- `POST /alamesa/api/recipes`, `PUT /alamesa/api/recipes/:id` y `DELETE /alamesa/api/recipes/:id` (Bearer token obligatorio).
+
+Genera un token largo y aleatorio fuera del repositorio y guárdalo como secreto del Worker ya compilado:
+
+```sh
+npx wrangler secret put RECIPE_API_TOKEN --config dist/server/wrangler.json --name alamesa
+```
+
+No uses una variable `NEXT_PUBLIC_*` ni incluyas el valor en el frontend. Para habilitar CORS a un cliente web concreto, configura `RECIPE_API_ALLOWED_ORIGINS` como una lista de orígenes exactos separados por comas; las peticiones del mismo origen y los clientes servidor-a-servidor sin cabecera `Origin` ya funcionan. No uses `*`.
+
+Ejemplo de alta:
+
+```sh
+curl -X POST 'https://danieta.com/alamesa/api/recipes' \
+  -H "Authorization: Bearer $RECIPE_API_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data-binary @examples/pollo-horno-manzana-cebolla.json
+```
+
+El script `examples/create-test-recipe.ps1` comprueba primero el `recipeId` estable y solo crea la receta de prueba si no existe. Esto hace que la operación manual sea idempotente. No se ejecuta contra producción durante el desarrollo.
+
+```powershell
+$env:RECIPE_API_TOKEN = Read-Host 'Token'
+./examples/create-test-recipe.ps1
+```
+
+Una creación correcta devuelve `201` y conserva ambos identificadores:
+
+```json
+{
+  "recipe": {
+    "id": 291,
+    "recipeId": "api-pollo-horno-manzana-cebolla",
+    "name": "Pollo al horno con manzana y cebolla",
+    "recipe": {"servings": 2, "ingredients": [], "steps": []}
+  }
+}
+```
+
+`id` es el identificador numérico del plato dentro del catálogo; `recipeId` es la identidad estable de la receta y `recipe` contiene sus raciones, ingredientes y pasos. El ejemplo abreviado anterior omite campos obligatorios solo para mostrar la forma de la respuesta; el JSON completo está en `examples/pollo-horno-manzana-cebolla.json`.
+
+El modelo actual no tiene un campo `person`: la evolución ya aplicada en el repositorio lo sustituyó por `diners` (identificadores de comensales) y `mealType`. La API usa esos nombres canónicos y valida que cada categoría y comensal exista en las Preferencias guardadas.
+
+Para conectarla a ChatGPT mediante una GPT Action, despliega primero la API y comprueba todos los métodos. Después importa `https://danieta.com/alamesa/openapi.yaml` en la sección de acciones, selecciona autenticación `API Key` de tipo `Bearer`, guarda allí el mismo token del secreto del Worker y prueba cada operación desde la vista previa. No pegues el token dentro del esquema ni de las instrucciones. La [guía oficial de GPT Actions](https://developers.openai.com/api/docs/actions/getting-started) recomienda describir la API con OpenAPI, configurar la autenticación y probar cada acción. Esta integración no necesita un servidor MCP.
 
 ## Comprobar
 
