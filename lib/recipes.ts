@@ -95,5 +95,5 @@ export function editPerson(menu:Menu,catalog:Dish[],menus:State['menus'],body:{d
   const choices=eligible(pool,catalog,body.date,menu,p,type).filter(r=>!used.has(r.id));if(!choices.length)throw new Error('Renueva las 50 ideas en Descubrir recetas para obtener nuevas propuestas.');
   personals[p]={kind:'suggestion',recipe:choices[Math.floor(Math.random()*choices.length)]};setPersonalFor(day,type,personals);setMealsFor(day,type,{...mealsFor(day,type),[p]:[]});
  }else {if(body.mode==='custom'&&!body.note?.trim())throw new Error('Escribe la comida puntual.');personals[p]={kind:body.mode,note:body.note?.trim()??''};setPersonalFor(day,type,personals);setMealsFor(day,type,{...mealsFor(day,type),[p]:[]});}
- day.locked=true;menu.days[index]=day;
+ day.locked=true;if(day.ruleApplications?.length)day.ruleOverride=true;menu.days[index]=day;
 }
