@@ -68,15 +68,19 @@ export function suggestForDay(menu:Menu,catalog:Dish[],date:string,pool:Recipe[]
  const options=eligible(pool,catalog,date,menu).filter(r=>!used.has(r.id));if(!options.length)throw new Error('No quedan ideas nuevas para este mes. Renueva las 50 recetas en Descubrir recetas.');
  const recipe=options[Math.floor(Math.random()*options.length)],replacement=structuredClone(day);Object.assign(replacement,{locked:true,suggestion:recipe.id,suggestedRecipe:recipe});setMealsFor(replacement,'Comida',emptyMeals(menu.settings));delete replacement.manual;setPersonalFor(replacement,'Comida',{});menu.days[index]=replacement;menu.recipeSlots=[...new Set([...(menu.recipeSlots??[]),date])];
 }
-export function editPerson(menu:Menu,catalog:Dish[],menus:State['menus'],body:{date:string;person:string;mealType:MealType;mode:'out'|'tupper'|'custom'|'dish'|'generate'|'suggest';note?:string;dishId?:number},pool:Recipe[]){
+export function editPerson(menu:Menu,catalog:Dish[],menus:State['menus'],body:{date:string;person:string;mealType:MealType;mode:'out'|'tupper'|'custom'|'dish'|'generate'|'suggest';note?:string;dishId?:number;dishIds?:number[]},pool:Recipe[]){
  const index=menu.days.findIndex(d=>d.date===body.date);if(index<0||!peopleFor(menu.settings).includes(body.person))throw new Error('Día o comensal no encontrado.');
  if(!selectedMealTypes(menu.settings).includes(body.mealType))throw new Error('Ese tipo de comida no está activo en este mes.');
  const day=individualDay(menu.days[index],menu),p=body.person,type=body.mealType,personals={...personalFor(day,type)};
  if(body.mode==='dish'){
-  const selected=catalog.find(d=>d.id===body.dishId);if(!selected)throw new Error('Selecciona un plato de vuestro catálogo.');
-  if(selected.type==='Guarnición'||!allowed(selected,p,body.date,menu.settings,type))throw new Error('Ese plato no es compatible con el comensal, el momento o la temporada.');
+  const requested=body.dishIds?.length?body.dishIds:body.dishId?[body.dishId]:[],selectedDishes=requested.map(id=>catalog.find(d=>d.id===id));
+  if(!requested.length||selectedDishes.some(d=>!d))throw new Error('Selecciona un plato de vuestro catálogo.');
+  if(new Set(requested).size!==requested.length||requested.length>2)throw new Error('Selecciona un plato único o un entrante y un principal.');
+  const explicit=selectedDishes as Dish[];
+  if(explicit.some(d=>d.type==='Guarnición'||!allowed(d,p,body.date,menu.settings,type)))throw new Error('Ese plato no es compatible con el comensal, el momento o la temporada.');
   let chosen:Dish[];
-  if(selected.type==='Único')chosen=[selected];
+  if(explicit.length===2){const starter=explicit.find(d=>d.type==='Entrante'),main=explicit.find(d=>d.type==='Principal');if(!starter||!main)throw new Error('La selección debe incluir un entrante y un plato principal.');chosen=[starter,main]}
+  else {const selected=explicit[0];if(selected.type==='Único')chosen=[selected];
   else {
    const opposite=selected.type==='Entrante'?'Principal':'Entrante',current=(mealsFor(day,type)[p]??[]).find(d=>d.type===opposite&&allowed(d,p,body.date,menu.settings,type));
    if(current)chosen=selected.type==='Entrante'?[selected,current]:[current,selected];
@@ -85,7 +89,7 @@ export function editPerson(menu:Menu,catalog:Dish[],menus:State['menus'],body:{d
     const history=Object.values(menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days).concat(menu.days.filter(d=>d.date!==body.date));
     const settings={...menu.settings,mealTypes:[type],diners:dinersFor(menu.settings).filter(d=>d.id===p)};chosen=mealsFor(generateDay(body.date,[selected,...complements],settings,history),type)[p];
    }
-  }
+  }}
   setMealsFor(day,type,{...mealsFor(day,type),[p]:chosen});delete personals[p];setPersonalFor(day,type,personals);
  }else if(body.mode==='generate'){
   const history=Object.values(menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days).concat(menu.days.filter(d=>d.date!==body.date));

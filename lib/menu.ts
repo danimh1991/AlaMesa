@@ -57,6 +57,7 @@ export function normalizeDish(d:Dish|Record<string,unknown>):Dish{
 function distance(a:string,b:string){return Math.abs(Date.parse(a)-Date.parse(b))/86400000}
 function week(date:string){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);return d.toISOString().slice(0,10)}
 export function primaryCategory(meal:Dish[]){return (meal.find(d=>d.type==='Principal')??meal.find(d=>d.type==='Único')??meal[meal.length-1])?.category}
+export function dayCategory(day:Day,type:MealType,people:string[]){return type==='Comida'&&day.suggestedRecipe?.category||people.map(person=>primaryCategory(mealsFor(day,type)[person]??[])).find(Boolean)}
 export function generateDay(date:string,catalog:Dish[],s:Settings,history:Day[],old?:Day,random= Math.random,enforceCategoryRanges=false):Day {
  const people=peopleFor(s);const day:Day={date,locked:false,meals:emptyMeals(s),mealsByType:{}};
  for(const mealType of selectedMealTypes(s))setMealsFor(day,mealType,generateMeals(date,catalog,s,mealType,history,old,random,enforceCategoryRanges));
@@ -86,12 +87,12 @@ function generateMeals(date:string,catalog:Dish[],s:Settings,mealType:MealType,h
  let targetCategory:string|undefined;
  if(mealType==='Comida'&&enforceCategoryRanges){
   const targetWeek=week(date),weekDates=monthDates(date.slice(0,7),s.days).filter(d=>week(d)===targetWeek),seenDates=new Set(history.filter(d=>week(d.date)===targetWeek).map(d=>d.date));
-  const counts=new Map<string,number>();for(const h of history.filter(d=>week(d.date)===targetWeek)){const category=h.suggestedRecipe?.category??primaryCategory(mealsFor(h,'Comida')[people[0]]??[]);if(category)counts.set(category,(counts.get(category)??0)+1)}
+  const weekHistory=[...new Map(history.filter(d=>week(d.date)===targetWeek).map(day=>[day.date,day])).values()],counts=new Map<string,number>();let flexibleDays=0;for(const h of weekHistory){const category=dayCategory(h,'Comida',people);if(category)counts.set(category,(counts.get(category)??0)+1);else flexibleDays++}
   const remaining=weekDates.filter(d=>d>=date&&!seenDates.has(d)).length,enforceMinimums=weekDates.length===s.days.length;
   const categories=Object.keys(s.categoryRanges),deficits=new Map(categories.map(category=>[category,enforceMinimums?Math.max(0,s.categoryRanges[category].min-(counts.get(category)??0)):0])),deficitTotal=[...deficits.values()].reduce((sum,n)=>sum+n,0);
-  if(deficitTotal>remaining)throw new Error('Los días bloqueados no dejan espacio para cumplir los mínimos semanales. Desbloquea algún día o ajusta los rangos.');
+  if(deficitTotal>remaining+flexibleDays)throw new Error('Las comidas ya fijadas no dejan espacio para cumplir los mínimos semanales. Cambia algún plato, desbloquea un día o ajusta los rangos.');
   const compatible=categories.filter(category=>(counts.get(category)??0)<s.categoryRanges[category].max&&people.every(p=>optionsByPerson[p].some(option=>primaryCategory(option.meal)===category)));
-  const required=deficitTotal===remaining?compatible.filter(category=>(deficits.get(category)??0)>0):compatible;
+  const required=deficitTotal===remaining+flexibleDays?compatible.filter(category=>(deficits.get(category)??0)>0):compatible;
   if(!required.length)throw new Error('No hay una combinación de platos que cumpla los rangos semanales. Revisa los máximos o añade platos compatibles.');
   targetCategory=required.map(category=>({category,score:people.reduce((sum,p)=>sum+(optionsByPerson[p].find(option=>primaryCategory(option.meal)===category)?.score??1e9),0)/people.length-(deficits.get(category)??0)*80})).sort((a,b)=>a.score-b.score)[0].category;
  }
