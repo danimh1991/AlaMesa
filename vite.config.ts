@@ -10,9 +10,11 @@ const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
 const D1_DATABASE_ID =
   process.env.D1_DATABASE_ID ?? SITE_CREATOR_PLACEHOLDER_DATABASE_ID;
 
-// En Sites/Codex no estará definida y la aplicación seguirá viviendo en "/".
-// En Cloudflare configuraremos APP_BASE_PATH="/alamesa".
-const APP_BASE_PATH = process.env.APP_BASE_PATH ?? "";
+// En Sites/Codex D1_DATABASE_ID no estará definida y la aplicación vivirá en
+// "/". Un build conectado a la D1 real es el despliegue de danieta.com y debe
+// conservar siempre su prefijo, incluso si APP_BASE_PATH se omite por error.
+const APP_BASE_PATH =
+  process.env.APP_BASE_PATH ?? (process.env.D1_DATABASE_ID ? "/alamesa" : "");
 
 const { d1, r2 } = hostingConfig;
 

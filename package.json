@@ -16,7 +16,7 @@
     "import:monsieur-cuisine": "node scripts/import-monsieur-cuisine.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "db:generate": "drizzle-kit generate",
-    "deploy:cloudflare": "wrangler deploy --config dist/server/wrangler.json --name alamesa --keep-vars"
+    "deploy:cloudflare": "node scripts/deploy-cloudflare.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

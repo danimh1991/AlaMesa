@@ -44,12 +44,10 @@ async function saveNormalized(state:State,revision:number,changes:SaveChanges){
  const owns="EXISTS (SELECT 1 FROM app_state WHERE id=1 AND write_token=?)";
  if(changes.dishes){
   const ids=changes.dishes==='all'?[...new Set([...Object.keys(state.overrides).map(Number),...(state.added??[]).map(d=>d.id),...(state.deletedDishIds??[])])]:[...new Set(changes.dishes)];
+  const records=ids.flatMap(id=>{const record=dishRecord(state,id);return record?[{id,...record}]:[]});
   if(changes.dishes==='all')statements.push(db.prepare(`DELETE FROM dish_changes WHERE ${owns}`).bind(token));
-  for(const id of ids){
-   const record=dishRecord(state,id);
-   if(changes.dishes!=='all')statements.push(db.prepare(`DELETE FROM dish_changes WHERE dish_id=? AND ${owns}`).bind(id,token));
-   if(record)statements.push(db.prepare(`INSERT OR REPLACE INTO dish_changes (dish_id,kind,data) SELECT ?,?,? WHERE ${owns}`).bind(id,record.kind,record.data,token));
-  }
+  else statements.push(db.prepare(`DELETE FROM dish_changes WHERE dish_id IN (SELECT CAST(value AS INTEGER) FROM json_each(?)) AND ${owns}`).bind(JSON.stringify(ids),token));
+  if(records.length)statements.push(db.prepare(`INSERT OR REPLACE INTO dish_changes (dish_id,kind,data) SELECT CAST(json_extract(value,'$.id') AS INTEGER),json_extract(value,'$.kind'),json_extract(value,'$.data') FROM json_each(?) WHERE ${owns}`).bind(JSON.stringify(records),token));
  }
  if(changes.menus){
   const months=changes.menus==='all'?Object.keys(state.menus):[...new Set(changes.menus)];

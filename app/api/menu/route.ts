@@ -52,16 +52,17 @@ const json=(data:unknown,status=200)=>Response.json(data,{status,headers:{'Cache
 type Input=z.infer<typeof input>;
 function readPartsFor(body:Input):ReadParts{
  const action=body.action,parts:ReadParts={dishes:true};
- if(['generate','reroll','lock','suggest-recipe','person-day','day-dish','confirm','edit','day-manual','reject-recipe','shopping-include'].includes(action)||(action==='accept-recipe'&&!!body.month))parts.menus=true;
+ if(['generate','reroll','lock','suggest-recipe','person-day','day-dish','confirm','edit','day-manual','reject-recipe','shopping-include','dish'].includes(action)||(action==='accept-recipe'&&!!body.month))parts.menus=true;
  if(['generate','confirm','save-available-food','remove-available-food'].includes(action))parts.availableFood=true;
  if(action.startsWith('shopping-')||action==='confirm')parts.shopping=true;
  if(['refresh-recipes','generate','reroll','suggest-recipe','person-day','day-dish','reject-recipe','accept-recipe'].includes(action))parts.discovery=true;
  return parts;
 }
-function changesFor(body:Input,createdDishId?:number,changedFoodId?:string,changedDishIds:number[]=[]):SaveChanges{
+function changesFor(body:Input,createdDishId?:number,changedFoodId?:string,changedDishIds:number[]=[],changedMenuMonths:string[]=[]):SaveChanges{
  const action=body.action;
  if(action==='settings'||action==='rules')return {settings:true};
- if(action==='dish'||action==='recipe'||action==='delete-dish')return {dishes:[action==='dish'?body.dish.id:body.id]};
+ if(action==='dish')return {dishes:[body.dish.id],...(changedMenuMonths.length?{menus:changedMenuMonths}:{})};
+ if(action==='recipe'||action==='delete-dish')return {dishes:[body.id]};
  if(action==='delete-dishes')return {dishes:body.ids};
  if(action==='create-dish')return {dishes:createdDishId?[createdDishId]:[]};
  if(action==='preview-import')return {};
@@ -87,6 +88,14 @@ function mutationPayload(state:State,revision:number,changes:SaveChanges,previou
 }
 function dishSnapshot(state:State){const rows=new Map<number,string>();for(const [id,dish] of Object.entries(state.overrides))rows.set(Number(id),'override:'+JSON.stringify(dish));for(const dish of state.added??[])rows.set(dish.id,'added:'+JSON.stringify(dish));for(const id of state.deletedDishIds??[])rows.set(id,'deleted');return rows}
 function changedDishes(before:Map<number,string>,state:State){const after=dishSnapshot(state);return [...new Set([...before.keys(),...after.keys()])].filter(id=>before.get(id)!==after.get(id))}
+function updateDraftDishSnapshots(state:State,dish:Dish){
+ const months:string[]=[];
+ for(const menu of Object.values(state.menus)){if(menu.status!=='draft')continue;let changed=false;
+  for(const day of menu.days)for(const type of selectedMealTypes(menu.settings)){const current=mealsFor(day,type);let typeChanged=false;const next=Object.fromEntries(Object.entries(current).map(([person,dishes])=>[person,dishes.map(saved=>{if(saved.id!==dish.id)return saved;typeChanged=true;return {...structuredClone(dish),...(saved.availableFoodId?{availableFoodId:saved.availableFoodId}:{})}})]));if(typeChanged){setMealsFor(day,type,next);changed=true}}
+  if(changed){menu.updatedAt=new Date().toISOString();menu.warnings=menuWarnings(menu,Object.values(state.menus).filter(other=>other.month!==menu.month&&other.status==='confirmed').flatMap(other=>other.days));months.push(menu.month)}
+ }
+ return months;
+}
 export async function GET(request:Request){try{const discovery=new URL(request.url).searchParams.get('part')==='discovery';if(discovery){const data=await readState({discovery:true});return json({revision:data.revision,discovery:data.state.discovery})}const data=await readState({dishes:true,menus:true,availableFood:true,shopping:true}),catalog=catalogFor(data.state),state={...data.state,overrides:{},added:[],deletedDishIds:[]};return json({state,revision:data.revision,catalog})}catch(e){console.error('Menu read',e);return json({error:'No se han podido cargar los menús. Inténtalo de nuevo.'},503)}}
 export async function POST(request:Request){
 
@@ -95,7 +104,7 @@ export async function POST(request:Request){
  let body;try{const raw=await request.text();if(new TextEncoder().encode(raw).length>1500000)return json({error:'El archivo supera el límite de 1,5 MB. Divide la importación en varios archivos.'},413);body=input.parse(JSON.parse(raw))}catch{return json({error:'Los datos enviados no son válidos.'},400)}
  try{const {state,revision}=await readState(readPartsFor(body));if(revision!==body.revision)return json({error:'Hay cambios guardados desde otra pestaña. Recarga antes de continuar.'},409);
  const catalog=catalogFor(state);
- let createdDishId:number|undefined,changedFoodId:string|undefined;
+ let createdDishId:number|undefined,changedFoodId:string|undefined,changedMenuMonths:string[]=[];
  const beforeDishes=['import-catalog','accept-recipe'].includes(body.action)?dishSnapshot(state):new Map<number,string>();
  if(['dish','create-dish','accept-recipe'].includes(body.action)&&'dish' in body&&!Object.keys(state.settings.categoryRanges).some(category=>normalize(category)===normalize(body.dish.category)))throw new Error('El tipo principal del plato no está en Preferencias. Añádelo antes de guardar el plato.');
  if(['dish','create-dish','accept-recipe'].includes(body.action)&&'dish' in body){const active=peopleFor(body.action==='accept-recipe'&&body.month?state.menus[body.month]?.settings??state.settings:state.settings);if(body.dish.diners.some(p=>!active.includes(p))){const existing='id' in body.dish?catalog.find(d=>d.id===(body.dish as Partial<Dish>).id):undefined;if(!existing||body.dish.diners.some(p=>!existing.diners.includes(p)))throw new Error('Selecciona comensales de Preferencias.');}}
@@ -110,7 +119,7 @@ export async function POST(request:Request){
  else if(body.action==='accept-recipe'){const recipe=resolveRecipe(state,body.recipeId)??(body.rowIndex!==undefined?await (await import('../../../lib/recipe-provider')).lookupRecipe(body.recipeId,body.rowIndex):undefined);if(!recipe)throw new Error('Vuelve a buscar la receta antes de confirmarla.');acceptRecipe(state,catalog,body,recipe);if(body.month){const m=state.menus[body.month];m.warnings=menuWarnings(m,Object.values(state.menus).filter(x=>x.month!==m.month&&x.status==='confirmed').flatMap(x=>x.days));}}
  else if(body.action==='settings'){state.settings={...body.settings,diners:body.settings.diners??state.settings.diners,days:[...new Set(body.settings.days)].sort(),summerMonths:[...new Set(body.settings.summerMonths)].sort((a,b)=>a-b),mealTypes:[...new Set(body.settings.mealTypes)]}}
  else if(body.action==='rules'){const ruleIds=new Set(body.rules.map(rule=>rule.id));if(body.rules.some(rule=>!peopleFor(state.settings).includes(rule.personId)))throw new Error('Alguna regla pertenece a un comensal que ya no existe.');if(body.rules.some(rule=>!selectedMealTypes(state.settings).includes(rule.mealType)))throw new Error('Activa primero ese tipo de comida en Preferencias.');if(body.ruleLinks.some(link=>!ruleIds.has(link.sourceRuleId)||!ruleIds.has(link.targetRuleId)))throw new Error('Algún enlace apunta a una regla que ya no existe.');state.settings={...state.settings,rules:body.rules,ruleLinks:body.ruleLinks};}
- else if(body.action==='dish'){if(!catalog.some(d=>d.id===body.dish.id))return json({error:'Plato desconocido.'},404);state.overrides[body.dish.id]={...body.dish,recipeId:catalog.find(d=>d.id===body.dish.id)?.recipeId}}
+ else if(body.action==='dish'){if(!catalog.some(d=>d.id===body.dish.id))return json({error:'Plato desconocido.'},404);state.overrides[body.dish.id]={...body.dish,recipeId:catalog.find(d=>d.id===body.dish.id)?.recipeId};changedMenuMonths=updateDraftDishSnapshots(state,state.overrides[body.dish.id])}
  else if(body.action==='create-dish'){if(catalog.some(d=>normalize(d.name)===normalize(body.dish.name)))return json({error:'Ya hay un plato con ese nombre. Puedes editarlo en el catálogo.'},409);const id=Math.max(...catalog.map(d=>d.id),...(state.deletedDishIds??[]),0)+1;createdDishId=id;state.added=[...(state.added??[]),{...body.dish,id,recipeId:undefined}]}
  else if(body.action==='delete-dish'){if(!catalog.some(d=>d.id===body.id))return json({error:'Plato desconocido.'},404);state.added=(state.added??[]).filter(d=>d.id!==body.id);delete state.overrides[body.id];state.deletedDishIds=[...new Set([...(state.deletedDishIds??[]),body.id])];}
  else if(body.action==='delete-dishes'){const known=new Set(catalog.map(d=>d.id));if(body.ids.some(id=>!known.has(id)))return json({error:'Alguno de los platos seleccionados ya no existe. Recarga antes de continuar.'},409);const selected=new Set(body.ids);state.added=(state.added??[]).filter(d=>!selected.has(d.id));for(const id of selected)delete state.overrides[id];state.deletedDishIds=[...new Set([...(state.deletedDishIds??[]),...selected])];}
@@ -129,6 +138,6 @@ export async function POST(request:Request){
  else if(body.action==='reject-recipe'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0||!menu.days[index].suggestion)throw new Error('No hay una receta por probar en ese día.');const history=[...Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days),...menu.days.filter(d=>d.date!==body.date)],replacement=structuredClone(menu.days[index]),food=generateDay(body.date,catalog,{...menu.settings,mealTypes:['Comida']},history,replacement,Math.random,true);setMealsFor(replacement,'Comida',mealsFor(food,'Comida'));delete replacement.suggestion;delete replacement.suggestedRecipe;delete replacement.manual;setPersonalFor(replacement,'Comida',{});replacement.locked=selectedMealTypes(menu.settings).some(type=>Object.keys(personalFor(replacement,type)).length>0);menu.days[index]=replacement;}
  else if(body.action==='reroll'){const index=menu.days.findIndex(d=>d.date===body.date);if(index<0)throw new Error('Día no encontrado.');if(menu.days[index].locked)throw new Error('Desbloquea el día para cambiarlo.');const history=[...Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days),...menu.days.filter(d=>d.date!==body.date)];menu.days[index]=generateDay(body.date,catalog,menu.settings,history,menu.days[index],Math.random,true)}
  }menu.updatedAt=new Date().toISOString();menu.warnings=menuWarnings(menu,Object.values(state.menus).filter(m=>m.month!==menu.month&&m.status==='confirmed').flatMap(m=>m.days))}}
- const changes=changesFor(body,createdDishId,changedFoodId,changedDishes(beforeDishes,state)),next=await saveState(state,revision,changes);return json(mutationPayload(state,next,changes,catalog));
- }catch(e){if(e instanceof Error&&e.message==='CONFLICT')return json({error:'Hay cambios más recientes. Recarga la página.'},409);console.error('Menu save',e);return json({error:e instanceof Error&&!/D1|SQLITE|Database/i.test(e.message)?e.message:'No se han guardado los cambios. Inténtalo de nuevo.'},400)}
+ const changes=changesFor(body,createdDishId,changedFoodId,changedDishes(beforeDishes,state),changedMenuMonths),next=await saveState(state,revision,changes);return json(mutationPayload(state,next,changes,catalog));
+ }catch(e){if(e instanceof Error&&e.message==='CONFLICT')return json({error:'Hay cambios más recientes. Recarga la página.'},409);const detail=e instanceof Error?{name:e.name,message:e.message,stack:e.stack,cause:e.cause}:e;console.error('Menu save',{action:body.action,detail});return json({error:e instanceof Error&&!/D1|SQLITE|Database/i.test(e.message)?e.message:'No se han guardado los cambios. Inténtalo de nuevo.'},400)}
 }
