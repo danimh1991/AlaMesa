@@ -10,7 +10,8 @@ const env={...process.env,D1_DATABASE_ID:databaseId,APP_BASE_PATH:process.env.AP
 if(env.APP_BASE_PATH!=='/alamesa')throw new Error('El despliegue de producción requiere APP_BASE_PATH=/alamesa. No se ha publicado nada.');
 
 function run(command,args){
- const result=spawnSync(command,args,{stdio:'inherit',env,shell:process.platform==='win32'});
+ const executable=process.platform==='win32'&&['npm','npx'].includes(command)?`${command}.cmd`:command;
+ const result=spawnSync(executable,args,{stdio:'inherit',env});
  if(result.error)throw result.error;
  if(result.status!==0)process.exit(result.status??1);
 }
