@@ -1,7 +1,8 @@
 'use client';
 import {useEffect,useMemo,useState,useRef} from 'react';
-import {Download,Plus,Pencil,Trash2,Check,X} from 'lucide-react';
+import {Download,Plus,Pencil,Trash2,Check,X,ShoppingCart} from 'lucide-react';
 import {shoppingList} from '../lib/shopping';
+import {addShoppingItem} from '../lib/general-shopping-api';
 import type {Dish,Menu,ShoppingStore,ShoppingItem} from '../lib/menu';
 import {downloadText} from './catalog-transfer';
 const number=(n:number)=>new Intl.NumberFormat('es',{maximumFractionDigits:3}).format(n);
@@ -15,10 +16,25 @@ export default function Shopping({initialMonth,menus,catalog,store,busy,editor,o
  useEffect(()=>{setFrom(menu?menu.month+'-01':'');setTo(end)},[menu?.month,end]);
  const list=useMemo(()=>menu?shoppingList(menu,catalog,from,to):null,[menu,catalog,from,to]);
  const [formError,setFormError]=useState('');const dialog=useRef<HTMLDialogElement>(null);
+ const [sending,setSending]=useState<Set<string>>(()=>new Set());
+ const [transferMessages,setTransferMessages]=useState<Record<string,{kind:'success'|'error';text:string}>>({});
  const items=store?.items??[],editing=editor!==null,edit=editor?.item??null,name=editor?.name??'',quantity=editor?.quantity??'',unit=editor?.unit??'';
  useEffect(()=>{if(editing)dialog.current?.showModal();else dialog.current?.close()},[editing]);
  function start(item?:ShoppingItem){setFormError('');onStartEditor(item)}
  async function action(a:Record<string,unknown>){try{await onAction(a)}catch{}}
+ async function addToGeneralList(item:ShoppingItem){
+  setSending(current=>new Set(current).add(item.id));
+  setTransferMessages(current=>{const next={...current};delete next[item.id];return next});
+  try{
+   const quantity=item.quantity===null?undefined:`${number(item.quantity)}${item.unit.trim()?` ${item.unit.trim()}`:''}`;
+   await addShoppingItem(item.name,quantity);
+   setTransferMessages(current=>({...current,[item.id]:{kind:'success',text:`${item.name} se ha añadido a la lista general.`}}));
+  }catch(error){
+   setTransferMessages(current=>({...current,[item.id]:{kind:'error',text:error instanceof Error?error.message:'No se ha podido añadir el artículo a la lista general.'}}));
+  }finally{
+   setSending(current=>{const next=new Set(current);next.delete(item.id);return next});
+  }
+ }
  function exportList(){downloadText('lista-de-la-compra.txt',['LISTA DE LA COMPRA',...items.map(i=>`${i.checked?'[x]':'[ ]'} ${i.name}: ${i.quantity===null?'Cantidad pendiente':number(i.quantity)} ${i.unit}`),'','DATOS PENDIENTES DEL MENÚ SELECCIONADO',...(list?.pending??[]).map(p=>`${p.name}: ${p.reason} (${p.dates.join(', ')})`)].join('\n'),'text/plain;charset=utf-8')}
  return <>
  <div className="catalog-actions"><button className="primary" disabled={busy} onClick={()=>start()}><Plus size={17}/>Añadir producto</button><button onClick={exportList} disabled={!items.length}><Download size={17}/>Exportar lista</button></div>
@@ -32,7 +48,8 @@ export default function Shopping({initialMonth,menus,catalog,store,busy,editor,o
  {!items.length&&<div className="empty compact"><h3>Tu lista está vacía</h3><p>Añade cualquier producto o incorpora las cantidades de un menú confirmado.</p></div>}
  {[false,true].map(checked=><section key={String(checked)}>{checked&&items.some(i=>i.checked)&&<div className="shopping-section-heading"><h2 className="shopping-title">Comprado</h2><button disabled={busy} onClick={()=>void action({action:'shopping-clear-checked'})}><Trash2 size={17}/>Limpiar comprados</button></div>}<div className="shopping-list">{items.filter(i=>i.checked===checked).map(i=><div className="shopping-item" key={i.id}>
  <label><input type="checkbox" disabled={busy} checked={i.checked} onChange={e=>void action({action:'shopping-check',id:i.id,checked:e.target.checked})}/><span className={i.checked?'bought':''}>{i.name}</span><strong>{i.quantity===null?'Sin cantidad':number(i.quantity)} {i.unit}</strong></label>
- <div className="shopping-row-actions"><button aria-label={'Editar '+i.name} disabled={busy} onClick={()=>start(i)}><Pencil size={15}/>Editar</button><button aria-label={'Eliminar '+i.name} disabled={busy} onClick={()=>void action({action:'shopping-remove',id:i.id})}><Trash2 size={15}/>Eliminar</button></div>
+ <div className="shopping-row-actions"><button className="shopping-transfer" disabled={busy||sending.has(i.id)} onClick={()=>void addToGeneralList(i)}><ShoppingCart size={15}/>{sending.has(i.id)?'Añadiendo…':'Añadir a la lista general'}</button><button aria-label={'Editar '+i.name} disabled={busy} onClick={()=>start(i)}><Pencil size={15}/>Editar</button><button aria-label={'Eliminar '+i.name} disabled={busy} onClick={()=>void action({action:'shopping-remove',id:i.id})}><Trash2 size={15}/>Eliminar</button></div>
+ {transferMessages[i.id]&&<p className={`shopping-transfer-message ${transferMessages[i.id].kind}`} role={transferMessages[i.id].kind==='error'?'alert':'status'}>{transferMessages[i.id].text}</p>}
  {i.uses.length>0&&<details><summary>Ver platos y días</summary>{i.uses.map(u=><p key={u}>{u}</p>)}</details>}</div>)}</div></section>)}
  {menu&&list?<section className="shopping-pending"><h2>Añadir desde un menú</h2><div className="filters shopping-filters"><label>Menú confirmado<select value={menu.month} onChange={e=>setMonth(e.target.value)}>{confirmed.map(m=><option key={m.month}>{m.month}</option>)}</select></label><label>Desde<input type="date" min={menu.month+'-01'} max={end} value={from} onChange={e=>setFrom(e.target.value)}/></label><label>Hasta<input type="date" min={from} max={end} value={to} onChange={e=>setTo(e.target.value)}/></label><button disabled={busy||!from||!to||from>to} onClick={()=>void action({action:'shopping-include',month:menu.month,from,to})}><Plus size={17}/>Añadir cantidades nuevas</button></div>
  <p>Al confirmar un menú se añaden sus cantidades automáticamente. Este botón incorpora menús anteriores o ingredientes completados después, sin duplicar lo ya añadido, incluso con periodos solapados.</p>
