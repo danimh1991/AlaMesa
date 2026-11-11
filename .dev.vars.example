@@ -1,0 +1,4 @@
+LLM_CORE_URL=https://llm-core-worker.example.workers.dev
+LLM_CORE_API_KEY=replace-with-the-alamesa-application-key
+LLM_RECIPE_AGENT_ID=recipe-creator
+LLM_SUBJECT_ID=alamesa-household

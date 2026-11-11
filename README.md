@@ -142,7 +142,7 @@ La importación es incremental: identifica cada receta mediante `monsieur-cuisin
 
 Las recetas quedan con `review: false` y `recipe.reviewed: false`. El cliente reproduce las cabeceras públicas de la web oficial para recibir los nombres localizados de los ingredientes, además de cantidades, unidades y `systemIngredientId`. Los pasos conservan tiempo, temperatura, velocidad, sentido inverso, turbo, amasado y demás ajustes del robot; los bloques técnicos `Mode` se convierten en instrucciones legibles.
 
-En **Descubrir recetas**, el selector **Fuentes al renovar** permite elegir Recetas de la Abuela, Monsieur Cuisine o ambas. La renovación guarda 50 recetas en el estado propio de A la Mesa; cuando se seleccionan ambas, obtiene 25 de cada fuente y muestra el reparto junto a la fecha de renovación. Navegar por las tarjetas guardadas no consulta ninguna API externa.
+La antigua pantalla **Descubrir recetas** y sus proveedores se conservan en el código por si hiciera falta recuperarlos, pero ya no están conectados a la navegación. **Crear receta** envía una petición libre al agente `recipe-creator` de LLM Core desde el backend, presenta la receta en formato legible y permite incorporarla a **Nuestros platos**. Las propuestas mensuales están desactivadas por defecto; si se configura un número mayor que 0, también se crean con ese agente.
 
 When using the Sites plugin, follow its skill instructions for installation, builds, and publishing. These npm commands remain available for standalone use.
 

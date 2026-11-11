@@ -42,6 +42,25 @@ En Workers Builds, usa `npm run build` como comando de compilación y `npm run d
 
 Si D1 es nuevo, aplica `drizzle/0000_household.sql` y después `drizzle/0002_normalized_state.sql`. Para actualizar una instalación antigua, crea primero una exportación de D1 y aplica únicamente `0002_normalized_state.sql`; conserva `household` como copia de transición. No ejecutes `0001_reset_planning.sql` en una base con menús: es un borrado histórico de planificación. La API de recetas reutiliza `dish_changes`, por lo que no requiere una migración adicional. La base de Cloudflare es independiente de la de Sites y de la local.
 
+## Creador de recetas con LLM Core
+
+La pantalla **Crear receta** y las propuestas nuevas del menú llaman a LLM Core únicamente desde el backend. Configura estas variables en el Worker `alamesa`:
+
+| Variable | Tipo | Valor |
+| --- | --- | --- |
+| `LLM_CORE_URL` | Variable | URL base del Worker LLM Core, sin `/v1/execute` |
+| `LLM_CORE_API_KEY` | Secreto | Clave de la aplicación `alamesa` creada por LLM Core |
+| `LLM_RECIPE_AGENT_ID` | Variable opcional | `recipe-creator` |
+| `LLM_SUBJECT_ID` | Variable opcional | Identificador interno del hogar, por defecto `alamesa-household` |
+
+Guarda la clave como secreto; nunca uses un nombre `NEXT_PUBLIC_*` ni la incluyas en el repositorio:
+
+```sh
+npx wrangler secret put LLM_CORE_API_KEY --config dist/server/wrangler.json --name alamesa
+```
+
+Para desarrollo local, copia `.dev.vars.example` a `.dev.vars` y rellena allí la URL y la clave. Ese archivo está ignorado por Git. La integración usa `POST /v1/execute`, envía `agentId`, `subjectId`, `prompt` e `input`, y valida de nuevo la receta recibida antes de mostrarla o guardarla.
+
 ## API REST de recetas
 
 La especificación OpenAPI 3.1 se publica en `/alamesa/openapi.yaml`. Las rutas son:
