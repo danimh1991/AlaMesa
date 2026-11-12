@@ -1,6 +1,6 @@
 'use client';
 import {useEffect,useRef,useState} from 'react';
-import {X,Plus,Pencil,Check,Trash2,BookOpen} from 'lucide-react';
+import {X,Plus,Pencil,Check,Trash2,BookOpen,Users,ChefHat,ShoppingBasket} from 'lucide-react';
 import {recipeFor} from '../lib/shopping';
 import {normalize,type Dish,type RecipeDetails} from '../lib/menu';
 import references from '../lib/recipes.json';
@@ -21,11 +21,10 @@ export default function DishRecipe({dish,editing,busy,error,onClose,onEdit,onCan
  const detail=recipeFor(dish);
 
  return <dialog ref={dialog} className="recipe-dialog" onCancel={onClose} onClick={event=>{if(event.target===dialog.current)onClose()}}>
-  <div className="dialog-header"><div><p className="eyebrow">VUESTRA RECETA</p><h2>{dish.name}</h2></div><button onClick={onClose} aria-label="Cerrar ficha de receta"><X size={20}/></button></div>
+  <div className="dialog-header recipe-view-header"><div><p className="eyebrow">VUESTRA RECETA</p><h2>{dish.name}</h2>{!editing&&<div className="recipe-meta"><span><Users size={15}/>{detail.servings?`${detail.servings} raciones`:'Raciones por indicar'}</span><span className={detail.reviewed?'is-reviewed':'needs-review'}><ShoppingBasket size={15}/>{detail.reviewed?'Lista para la compra':'Pendiente de revisar'}</span></div>}</div><button onClick={onClose} aria-label="Cerrar ficha de receta"><X size={20}/></button></div>
   {!editing?<>
-   <p className="footnote">{detail.servings?`Cantidades para ${detail.servings} raciones.`:'Raciones pendientes de indicar.'} {detail.reviewed?'Revisada para la lista de la compra.':'Pendiente de revisión para la compra.'}</p>
-   {detail.ingredients.length||detail.steps.length?<div className="recipe-detail"><section><h3>Ingredientes</h3><ul>{detail.ingredients.map((item,n)=><li key={n}>{fmt(item.quantity)} {item.unit} {item.name}{item.notes&&` · ${item.notes}`}</li>)}</ul></section><section><h3>Preparación</h3><ol>{detail.steps.map((step,n)=><li key={n}>{step}</li>)}</ol></section></div>:<div className="empty compact"><BookOpen size={30}/><h3>Todavía no hay receta</h3><p>Añade vuestra forma de prepararlo o utiliza una receta de referencia.</p></div>}
-   {detail.notes&&<p className="recipe-note">{detail.notes}</p>}{detail.sourceUrl&&<a href={detail.sourceUrl} target="_blank" rel="noreferrer">Ver fuente original</a>}
+   {detail.ingredients.length||detail.steps.length?<div className="recipe-detail recipe-detail-polished"><section className="recipe-ingredients"><div className="recipe-section-heading"><span><ShoppingBasket size={18}/></span><div><p>PREPARA TODO</p><h3>Ingredientes</h3></div><small>{detail.ingredients.length} {detail.ingredients.length===1?'ingrediente':'ingredientes'}</small></div><ul>{detail.ingredients.map((item,n)=><li key={n}><span className="ingredient-check" aria-hidden="true"><Check size={14}/></span><span className="ingredient-copy"><strong>{item.name}</strong>{item.notes&&<small>{item.notes}</small>}</span>{(item.quantity!==null||item.unit)&&<b>{fmt(item.quantity)} {item.unit}</b>}</li>)}</ul></section><section className="recipe-steps"><div className="recipe-section-heading"><span><ChefHat size={18}/></span><div><p>MANOS A LA OBRA</p><h3>Preparación</h3></div><small>{detail.steps.length} {detail.steps.length===1?'paso':'pasos'}</small></div><ol>{detail.steps.map((step,n)=><li key={n}><span className="step-number">{n+1}</span><p>{step}</p></li>)}</ol></section></div>:<div className="empty compact"><BookOpen size={30}/><h3>Todavía no hay receta</h3><p>Añade vuestra forma de prepararlo o utiliza una receta de referencia.</p></div>}
+   {detail.notes&&<aside className="recipe-note"><strong>Notas de la receta</strong><p>{detail.notes}</p></aside>}{detail.sourceUrl&&<a className="recipe-source-link" href={detail.sourceUrl} target="_blank" rel="noreferrer">Ver fuente original</a>}
    <div className="dialog-actions"><button onClick={onClose}>Cerrar</button><button className="primary" disabled={busy} onClick={beginEdit}><Pencil size={17}/>Editar receta</button></div>
   </>:<form onSubmit={async event=>{event.preventDefault();try{await onSave({...value,steps:value.steps.map(step=>step.trim()).filter(Boolean)})}catch{}}}>
    <p className="footnote">Indica las raciones que producen estas cantidades. La compra ajustará cada plato al número de comensales que lo tengan asignado en el menú.</p>
